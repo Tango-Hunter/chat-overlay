@@ -1,0 +1,40 @@
+<!--
+Name: index.html
+Author: Tango Hunter
+Date Created: 8/24/26
+Description: OBS Browser Source for the Terminal Style Chat Overlay.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Digital Terminal Twitch Chat Overlay">
+    <title>Terminal</title>
+
+    <link rel="stylesheet" href="styles/chat.css">
+    <script src="scripts/chat.js" defer></script>
+</head>
+
+<body>
+    <main class="terminal" aria-label="Twitch Chat">
+
+        <header class="terminal-header">
+            <span class="terminal-dot red" aria-hidden="true"></span>
+            <span class="terminal-dot yellow" aria-hidden="true"></span>
+            <span class="terminal-dot green" aria-hidden="true"></span>
+            <span class="terminal-title">Terminal:~</span>
+        </header>
+
+        <section
+            id="chat"
+            class="terminal-body"
+            aria-live="polite"
+            aria-label="Twitch Chat Messages"
+        ></section>
+
+    </main>
+</body>
+</html>

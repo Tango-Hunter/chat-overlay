@@ -1,0 +1,25 @@
+{
+  "name": "chat-overlay",
+  "version": "1.0.0",
+  "description": "A customizable Twitch chat overlay designed around a digital terminal aesthetic for OBS.",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "twitch",
+    "chat",
+    "overlay",
+    "obs"
+  ],
+  "author": "Tango Hunter",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "pg": "^8.23.0",
+    "ws": "^8.21.3"
+  }
+}

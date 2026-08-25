@@ -1,0 +1,321 @@
+/*
+Title: chat.css
+Author: Tango Hunter
+Date Created: 8/24/26
+Description: Style Sheet for the Digital Terminal Chat Overlay
+*/
+
+
+:root {
+    --terminal-background: #0B0F0C;
+    --terminal-header: #121A14;
+    --terminal-border: #1f5f3a;
+
+    --terminal-primary: #00ff78;
+    --terminal-text: #00ff78;
+    --terminal-title: #9fb8a7;
+
+    --terminal-shadow:
+        0 0 10px rgba(0, 255, 120, 0.20),
+        0 0 25px rgba(0, 255, 120, 0.08);
+
+    --terminal-font: Consolas, monospace;
+
+    --terminal-font-size: 18px;
+    --terminal-line-height: 1.4;
+
+    --avatar-size: 32px;
+    --message-gap: 16px;
+
+    --terminal-padding: 1rem;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    overflow: hidden;
+
+    background: transparent;
+
+    color: var(--terminal-text);
+    font-family: var(--terminal-font);
+    font-size: var(--terminal-font-size);
+}
+
+/* ---------------------------------------------------------
+   TERMINAL WINDOW
+   --------------------------------------------------------- */
+
+.terminal {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    background: var(--terminal-background);
+
+    border: 1px solid var(--terminal-border);
+    border-radius: 0.5rem;
+
+    box-shadow: var(--terminal-shadow);
+}
+
+/* ---------------------------------------------------------
+   TERMINAL HEADER
+   --------------------------------------------------------- */
+
+.terminal-header {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+
+    gap: 0.4rem;
+
+    min-height: 38px;
+    padding: 0.5rem;
+
+    background: var(--terminal-header);
+
+    border-bottom: 1px solid rgba(0, 255, 120, 0.10);
+}
+
+.terminal-dot {
+    width: 0.6rem;
+    height: 0.6rem;
+
+    flex: 0 0 0.6rem;
+
+    border-radius: 50%;
+}
+
+.terminal-dot.red {
+    background: #ff5f56;
+}
+
+.terminal-dot.yellow {
+    background: #ffbd2e;
+}
+
+.terminal-dot.green {
+    background: #27c93f;
+}
+
+.terminal-title {
+    margin-left: 0.7rem;
+
+    color: var(--terminal-title);
+
+    font-size: 0.8rem;
+
+    white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   CHAT BODY
+   --------------------------------------------------------- */
+
+.terminal-body {
+    flex: 1 1 auto;
+
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    gap: var(--message-gap);
+
+    padding: var(--terminal-padding);
+
+    overflow: hidden;
+
+    color: var(--terminal-text);
+
+    text-align: left;
+
+    /*
+     * Preserve intentional whitespace in messages while still
+     * allowing long messages to wrap naturally.
+     */
+    white-space: pre-wrap;
+}
+
+/* ---------------------------------------------------------
+   CHAT MESSAGE
+   --------------------------------------------------------- */
+
+.chat-message {
+    flex: 0 0 auto;
+
+    max-width: 100%;
+
+    opacity: 0;
+
+    transform: translateY(8px);
+
+    animation: message-enter 220ms ease-out forwards;
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+
+    gap: 0.6rem;
+
+    min-height: var(--avatar-size);
+}
+
+.chat-avatar,
+.chat-avatar-fallback {
+    width: var(--avatar-size);
+    height: var(--avatar-size);
+
+    flex: 0 0 var(--avatar-size);
+
+    border: 1px solid rgba(0, 255, 120, 0.45);
+    border-radius: 4px;
+}
+
+.chat-avatar {
+    display: block;
+
+    object-fit: cover;
+
+    background: #0B0F0C;
+}
+
+.chat-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 255, 120, 0.05);
+
+    color: var(--terminal-primary);
+
+    font-weight: 700;
+}
+
+.chat-username {
+    color: var(--terminal-primary);
+
+    font-weight: 700;
+
+    overflow-wrap: anywhere;
+}
+
+.chat-body {
+    display: flex;
+    align-items: flex-start;
+
+    margin-top: 0.35rem;
+
+    padding-left: calc(var(--avatar-size) + 0.6rem);
+
+    line-height: var(--terminal-line-height);
+
+    overflow-wrap: anywhere;
+}
+
+.chat-prompt {
+    flex: 0 0 auto;
+
+    margin-right: 0.5rem;
+
+    color: var(--terminal-primary);
+
+    font-weight: 700;
+
+    user-select: none;
+}
+
+.chat-text {
+    min-width: 0;
+
+    color: var(--terminal-text);
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------
+   TYPEWRITER CURSOR
+   --------------------------------------------------------- */
+
+.chat-cursor {
+    display: inline-block;
+
+    width: 0.55em;
+    height: 1.15em;
+
+    margin-left: 3px;
+
+    vertical-align: -0.16em;
+
+    background: var(--terminal-primary);
+
+    box-shadow: 0 0 6px rgba(0, 255, 120, 0.45);
+
+    animation: cursor-blink 650ms steps(1, end) infinite;
+}
+
+.chat-cursor.finished {
+    display: none;
+}
+
+/* ---------------------------------------------------------
+   ANIMATIONS
+   --------------------------------------------------------- */
+
+@keyframes message-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cursor-blink {
+    0%,
+    49% {
+        opacity: 1;
+    }
+
+    50%,
+    100% {
+        opacity: 0;
+    }
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE ADJUSTMENT
+   --------------------------------------------------------- */
+
+@media (max-width: 500px) {
+    :root {
+        --terminal-font-size: 16px;
+        --avatar-size: 28px;
+        --message-gap: 12px;
+        --terminal-padding: 0.75rem;
+    }
+}
