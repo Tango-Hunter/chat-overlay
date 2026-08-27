@@ -1,0 +1,224 @@
+<!--
+Name: overlay-settings.html
+Author: Tango Hunter
+Date Created: 8/26/26
+Description: Public-facing settings manager for the Digital Terminal Chat Overlay.
+-->
+
+
+<!-- ==============================================================
+        Local Link: http://localhost:3000/overlay-settings.html
+============================================================== -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Terminal | Overlay Settings</title>
+    <link href="styles/overlay-settings.css"rel="stylesheet"/>
+</head>
+
+
+<body>
+
+    <div id="top"></div>
+
+
+    <main class="container">
+
+
+        <!-- ==============================================================
+             PAGE HEADER
+        ============================================================== -->
+
+        <header class="page-header">
+
+            <div class="page-header-content">
+                <div>
+                    <h1>Overlay Settings</h1>
+
+                    <p class="page-description">
+                        Configure the appearance, behavior, and effects of the Digital Terminal Chat Overlay.
+                    </p>
+                </div>
+
+                <button id="logoutBtn" type="button" class="btn-secondary">
+                    Logout
+                </button>
+            </div>
+
+        </header>
+
+
+        <!-- ==============================================================
+             INFORMATION / ACTIONS
+        ============================================================== -->
+
+        <section class="top-grid">
+
+
+            <!-- ==========================================================
+                 CHAT OVERLAY CONFIGURATION
+            =========================================================== -->
+
+            <div class="info-card">
+
+                <div class="card-content">
+
+                    <h2>Chat Overlay Configuration</h2>
+
+                    <p>
+                        Changes made here are applied directly to the live overlay configuration.
+                    </p>
+
+                </div>
+
+                <div id="connectionStatus" class="connection-status">
+                    Loading settings...
+                </div>
+
+            </div>
+
+
+            <!-- ==========================================================
+                 APPLY CHANGES
+            =========================================================== -->
+
+            <div class="info-card action-card">
+
+                <div class="card-content">
+
+                    <h2> Apply Changes</h2>
+
+                    <p>
+                        Save your changes, discard your current edits, or restore all settings to their default values.
+                    </p>
+
+                </div>
+
+
+                <div class="action-buttons">
+
+                    <button id="saveBtn" type="button" class="btn-primary">
+                        Save
+                    </button>
+
+                    <button id="cancelBtn" type="button" class="btn-secondary">
+                        Cancel
+                    </button>
+
+                    <button id="resetBtn" type="button" class="btn-danger">
+                        Reset to Defaults
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==============================================================
+             SETTINGS FORM
+        ============================================================== -->
+
+        <form id="settingsForm" novalidate>
+
+            <section class="settings-layout">
+
+
+                <!-- ======================================================
+                     CHAT SETTINGS
+                ======================================================= -->
+
+                <div class="settings-column">
+
+                    <div class="column-header">
+
+                        <h2>Chat Settings</h2>
+
+                        <p>
+                            Configure how chat messages appear and behave within the terminal.
+                        </p>
+
+                    </div>
+
+
+                    <div id="chatSettingsContainer" class="settings-container">
+
+                        <div class="loading-state">
+
+                            <div class="loading-spinner"></div>
+
+                            <p>
+                                Loading chat settings...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ======================================================
+                     OVERLAY EFFECTS
+                ======================================================= -->
+
+                <div class="settings-column">
+
+                    <div class="column-header">
+
+                        <h2>Overlay Effects</h2>
+
+                        <p>
+                            Configure the visual effects used by the terminal.
+                        </p>
+
+                    </div>
+
+
+                    <div id="effectsSettingsContainer" class="settings-container">
+
+                        <div class="loading-state">
+
+                            <div class="loading-spinner"></div>
+
+                            <p>
+                                Loading overlay effects...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+        </form>
+
+
+        <!-- ==============================================================
+             STATUS
+        ============================================================== -->
+
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+
+
+    </main>
+
+
+    <!-- ==============================================================
+         JAVASCRIPT
+    ============================================================== -->
+
+    <script src="scripts/overlay-settings.js"></script>
+
+</body>
+
+</html>

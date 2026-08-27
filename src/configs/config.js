@@ -29,18 +29,13 @@ const server = {
     /*
      * 0.0.0.0 allows the application to accept connections
      * from the network interface as well as localhost.
-     *
      * This is important for Railway deployment.
      */
-    host: process.env.HOST || "0.0.0.0"
+    host: process.env.HOST || "0.0.0.0",
 };
 
 /*
  * PostgreSQL connection pool
- *
- * PostgreSQL connection information is supplied through
- * environment variables.
- *
  * SSL is enabled because the production database will be
  * hosted remotely.
  */
@@ -57,14 +52,26 @@ const database = new Pool({
 });
 
 /*
+ * Authentication configuration
+ */
+
+const auth = {
+    username: process.env.USER_LOGIN,
+    passwordHash: process.env.USER_PASSWORD_HASH,
+    sessionSecret: process.env.SESSION_SECRET,
+    sessionCookieName:
+        server.environment === "production"
+            ? "__Host-OperatorSession"
+            : "OperatorSession"
+};
+
+/*
  * Export all application configuration through one object.
- *
- * Object.freeze prevents accidental modification of the
- * configuration after the application has started.
  */
 const config = Object.freeze({
     server,
-    database
+    database,
+    auth
 });
 
 export default config;

@@ -1,0 +1,107 @@
+<!--
+ * Name: authentication.html
+ * Author: Tango Hunter
+ * Date Created: 8/27/26
+ * Description: Primary Operator authentication interface.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Digital Terminal | Authentication</title>
+    <link href="styles/authentication.css" rel="stylesheet"/>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <!-- PAGE HEADER -->
+
+        <header class="page-header">
+            <h1>Primary Operator Authentication</h1>
+            <p class="page-description">
+                Enter Credentials for access.
+            </p>
+        </header>
+
+
+        <!-- AUTHENTICATION -->
+
+        <section class="authentication-card">
+
+            <div class="card-header">
+                <h2>Enter Credentials</h2>
+                <p>Primary Operator authorization is required.</p>
+            </div>
+
+            <form id="authenticationForm" autocomplete="off" novalidate>
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input
+                        type="password"
+                        id="username"
+                        name="username"
+                        autocomplete="off"
+                        spellcheck="false"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        autocomplete="off"
+                        required
+                    >
+                </div>
+
+                <div
+                    id="authenticationMessage"
+                    class="authentication-message"
+                    role="alert"
+                    aria-live="assertive"
+                ></div>
+
+                <div class="action-buttons">
+                    <button id="authenticateBtn" type="submit" class="btn-primary">
+                        Authenticate
+                    </button>
+
+                    <button id="exitBtn" type="button" class="btn-secondary">
+                        Exit
+                    </button>
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- SECURITY NOTICE -->
+
+        <section class="notice-card">
+            <h2>Access Notice</h2>
+            <p>
+                This interface is restricted to the Primary Operator.
+                Unauthorized access is prohibited.
+            </p>
+            <p>
+                All authentication attempts are processed by the application server.
+            </p>
+        </section>
+
+    </main>
+
+    <script src="scripts/authentication.js"></script>
+
+</body>
+</html>

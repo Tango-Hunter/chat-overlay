@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
+    "password-reset": "node src/auth/generate-password-hash.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -17,8 +18,10 @@
   "author": "Tango Hunter",
   "license": "MIT",
   "dependencies": {
+    "connect-pg-simple": "^10.0.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "pg": "^8.23.0",
     "ws": "^8.21.3"
   }
