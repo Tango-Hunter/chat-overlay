@@ -62,7 +62,19 @@ const auth = {
     sessionCookieName:
         server.environment === "production"
             ? "__Host-OperatorSession"
-            : "OperatorSession"
+            : "OperatorSession",
+    administrator: process.env.ADMINISTRATOR_ID
+};
+
+/*
+ * Twitch configuration
+ */
+
+const twitch = {
+    clientId: process.env.TWITCH_CLIENT_ID,
+    clientSecret: process.env.TWITCH_CLIENT_SECRET,
+    eventSubSecret: process.env.TWITCH_EVENTSUB_SECRET,
+    tokenEncryptionKey: process.env.TWITCH_TOKEN_ENCRYPTION_KEY
 };
 
 /*
@@ -71,7 +83,8 @@ const auth = {
 const config = Object.freeze({
     server,
     database,
-    auth
+    auth,
+    twitch
 });
 
 export default config;

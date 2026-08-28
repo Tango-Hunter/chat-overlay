@@ -14,8 +14,7 @@ import express from "express";
 import session from "express-session";
 import pgSession from "connect-pg-simple";
 import config from "./configs/config.js";
-import { initializeOverlaySettings } from "./database/overlay-settings.js";
-import { initializeOperatorSession } from "./database/operator-session.js";
+import { initializeDatabase } from "./database/init-database.js";
 import overlaySettingsRoutes from "./routes/overlay-settings.js";
 import authenticationRoutes from "./routes/authentication.js";
 import {
@@ -178,23 +177,9 @@ async function startServer() {
     try {
 
         /*
-         * Initialize the overlay settings database.
-         *
-         * This will:
-         * 1. Create the overlay_settings table if it doesn't exist.
-         * 2. Insert any missing default settings.
-         * 3. Leave existing settings untouched.
+         * Initialize tables in the database.
          */
-        await initializeOverlaySettings();
-
-        /*
-         * Initialize the operator session database.
-         *
-         * This will:
-         * 1. Create the operator_sessions table if it doesn't exist.
-         * 2. Create the expiration index if it doesn't exist.
-         */
-        await initializeOperatorSession();
+        await initializeDatabase();
 
         /*
          * Start the Express server after the database

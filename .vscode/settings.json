@@ -1,7 +1,9 @@
 {
   "cSpell.words": [
+    "BIGSERIAL",
     "dotenv",
     "eslintcache",
+    "eventsub",
     "jscoverage",
     "jspm",
     "nuxt",
@@ -13,9 +15,11 @@
     "pids",
     "scanline",
     "scanlines",
+    "sess",
     "stylelintcache",
     "Stylesheet",
     "Sveltekit",
+    "TIMESTAMPTZ",
     "vite",
     "vitepress",
     "vuepress",
