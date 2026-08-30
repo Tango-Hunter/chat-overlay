@@ -119,6 +119,19 @@ app.use(
 );
 
 
+app.get(
+    "/debug/routes",
+    (req, res) => {
+        res.status(200).json({
+            createLink: true,
+            registration: true,
+            twitch: true,
+            timestamp: new Date().toISOString()
+        });
+    }
+);
+
+
 /*==============================================================================
     CREATE REGISTRATION LINK PAGE
 ==============================================================================*/
