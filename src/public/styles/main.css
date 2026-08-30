@@ -127,6 +127,22 @@ select {
     line-height: 1.5;
 }
 
+.registration-form {
+    padding: 20px;
+    background: #1a1a1a;
+    border-radius: 10px;
+}
+
+.registration-form .card-content {
+    width: 100%;
+}
+
+.registration-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 5px;
+}
+
 
 /*==============================================================================
     COLUMN

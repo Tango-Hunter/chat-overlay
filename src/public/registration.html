@@ -74,7 +74,7 @@
 
         <form
             id="registration-form"
-            class="info-card"
+            class="registration-form"
             style="display: none;"
         >
 
@@ -87,51 +87,53 @@
                     Digital Terminal Chat Overlay.
                 </p>
 
+                <div class="form-group">
+                    <label for="username">
+                        Username
+                    </label>
 
-                <label for="username">
-                    Username
-                </label>
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        autocomplete="username"
+                        minlength="3"
+                        maxlength="50"
+                        required
+                    >
+                </div>
 
-                <input
-                    id="username"
-                    name="username"
-                    type="text"
-                    autocomplete="username"
-                    minlength="3"
-                    maxlength="50"
-                    required
-                >
+                <div class="form-group">
+                    <label for="password">
+                        Password
+                    </label>
 
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autocomplete="new-password"
+                        minlength="12"
+                        required
+                    >
+                </div>
 
-                <label for="password">
-                    Password
-                </label>
+                <div class="form-group">
+                    <label for="confirm-password">
+                        Confirm Password
+                    </label>
 
-                <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autocomplete="new-password"
-                    minlength="12"
-                    required
-                >
-
-
-                <label for="confirm-password">
-                    Confirm Password
-                </label>
-
-                <input
-                    id="confirm-password"
-                    name="confirmPassword"
-                    type="password"
-                    autocomplete="new-password"
-                    minlength="12"
-                    required
-                >
+                    <input
+                        id="confirm-password"
+                        name="confirmPassword"
+                        type="password"
+                        autocomplete="new-password"
+                        minlength="12"
+                        required
+                    >
+                </div>
 
             </div>
-
 
             <div class="registration-actions">
 

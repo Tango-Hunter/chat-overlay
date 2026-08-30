@@ -136,6 +136,50 @@ app.get(
     }
 );
 
+app.get(
+    "/create-link.html",
+    (req, res) => {
+        res.sendFile(
+            path.join(
+                __dirname,
+                "public",
+                "create-link.html"
+            )
+        );
+    }
+);
+
+
+/*==============================================================================
+    REGISTRATION PAGE
+==============================================================================*/
+
+app.get(
+    "/registration",
+    (req, res) => {
+        res.sendFile(
+            path.join(
+                __dirname,
+                "public",
+                "registration.html"
+            )
+        );
+    }
+);
+
+app.get(
+    "/registration.html",
+    (req, res) => {
+        res.sendFile(
+            path.join(
+                __dirname,
+                "public",
+                "registration.html"
+            )
+        );
+    }
+);
+
 
 /*
  * ==============================================================================
