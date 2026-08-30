@@ -1,0 +1,475 @@
+/*
+ * ============================================================================
+ * Title: main.css
+ * Author: Tango Hunter
+ * Date Created: 8/28/26
+ * Description: Shared styling for Chat Overlay management pages.
+ * ============================================================================
+ */
+
+
+/*==============================================================================
+    GLOBAL
+==============================================================================*/
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 30px;
+    font-family: Arial, sans-serif;
+    background: #111;
+    color: #eee;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+button,
+input,
+select {
+    font-family: inherit;
+}
+
+
+/*==============================================================================
+    CONTAINER
+==============================================================================*/
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+/*==============================================================================
+    PAGE HEADER
+==============================================================================*/
+
+.page-header {
+    margin-bottom: 35px;
+}
+
+.page-header-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.page-header h1 {
+    margin: 0 0 10px;
+    font-size: 2rem;
+    color: #fff;
+}
+
+.page-description {
+    margin: 0;
+    color: #bbb;
+    line-height: 1.6;
+}
+
+
+/*==============================================================================
+    TOP GRID
+==============================================================================*/
+
+.top-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+
+/*==============================================================================
+    CARDS
+==============================================================================*/
+
+.info-card,
+.settings-column,
+.authentication-card,
+.notice-card {
+    min-width: 0;
+    padding: 20px;
+    background: #1a1a1a;
+    border-radius: 10px;
+}
+
+.card-content {
+    min-width: 0;
+}
+
+.info-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+}
+
+.info-card h2,
+.settings-column h2,
+.authentication-card h2,
+.notice-card h2 {
+    margin: 0 0 8px;
+    color: #fff;
+    font-size: 1.4rem;
+}
+
+.info-card p,
+.notice-card p {
+    margin: 0;
+    color: #bbb;
+    line-height: 1.5;
+}
+
+
+/*==============================================================================
+    COLUMN
+==============================================================================*/
+
+.column-header {
+    margin-bottom: 25px;
+}
+
+.column-header p {
+    margin: 0;
+    color: #888;
+    line-height: 1.5;
+}
+
+
+/*==============================================================================
+    CONNECTION STATUS
+==============================================================================*/
+
+.connection-status {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background: #222;
+    color: #aaa;
+    font-family: Consolas, monospace;
+    font-size: .85rem;
+}
+
+.connection-status.connected {
+    border-color: #4caf50;
+    color: #4caf50;
+}
+
+.connection-status.error {
+    border-color: #e53935;
+    color: #e53935;
+}
+
+
+/*==============================================================================
+    BUTTONS
+==============================================================================*/
+
+button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: background .2s ease, filter .2s ease, transform .15s ease;
+}
+
+button:hover {
+    filter: brightness(110%);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+    filter: none;
+}
+
+.btn-primary {
+    background: #4caf50;
+}
+
+.btn-secondary {
+    background: #555;
+}
+
+.btn-danger {
+    background: #e53935;
+}
+
+
+/*==============================================================================
+    REGISTRATION LINKS
+==============================================================================*/
+
+.registration-links {
+    margin-bottom: 25px;
+}
+
+.links-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.registration-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background: #222;
+}
+
+.registration-link-type {
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+}
+
+.registration-link-content {
+    min-width: 0;
+}
+
+.registration-link-url {
+    overflow-wrap: anywhere;
+    color: #eee;
+    font-family: Consolas, monospace;
+    font-size: .9rem;
+    line-height: 1.5;
+}
+
+.registration-link-expiration {
+    margin-top: 6px;
+    color: #888;
+    font-size: .8rem;
+}
+
+.registration-link-actions {
+    display: flex;
+    flex-shrink: 0;
+    gap: 10px;
+}
+
+.empty-state {
+    padding: 30px 20px;
+    border: 1px dashed #333;
+    border-radius: 8px;
+    color: #888;
+    text-align: center;
+}
+
+
+/*==============================================================================
+    FORM
+==============================================================================*/
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    color: #ddd;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    max-width: 520px;
+    padding: 10px 12px;
+    border: 1px solid #333;
+    border-radius: 6px;
+    background: #2a2a2a;
+    color: #eee;
+    font-size: .95rem;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.form-group input:hover {
+    border-color: #555;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4caf50;
+    box-shadow: 0 0 0 2px rgba(76,175,80,.15);
+}
+
+
+/*==============================================================================
+    ACTION BUTTONS
+==============================================================================*/
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+/*==============================================================================
+    STATUS
+==============================================================================*/
+
+.status {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    min-width: 350px;
+    max-width: 700px;
+    padding: 14px 22px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+    z-index: 5000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease, transform .25s ease;
+}
+
+.status.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.status.success {
+    background: #2e7d32;
+}
+
+.status.warning {
+    background: #f9a825;
+    color: #111;
+}
+
+.status.error {
+    background: #c62828;
+}
+
+
+/*==============================================================================
+    LOADING
+==============================================================================*/
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    color: #888;
+}
+
+.loading-spinner {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 15px;
+    border: 3px solid #333;
+    border-top-color: #4caf50;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+/*==============================================================================
+    RESPONSIVE
+==============================================================================*/
+
+@media (max-width: 900px) {
+
+    .top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-card {
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+
+    body {
+        padding: 15px;
+    }
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .page-header-content button {
+        align-self: flex-start;
+    }
+
+    .page-header h1 {
+        font-size: 1.7rem;
+    }
+
+    .info-card,
+    .settings-column,
+    .authentication-card,
+    .notice-card {
+        padding: 16px;
+    }
+
+    .info-card {
+        flex-direction: column;
+    }
+
+    .connection-status {
+        width: 100%;
+        text-align: center;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons button {
+        width: 100%;
+    }
+
+    .registration-link {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .registration-link-actions button {
+        width: 100%;
+    }
+
+    .registration-link-actions {
+        width: 100%;
+    }
+
+    .form-group input {
+        max-width: 100%;
+    }
+}

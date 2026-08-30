@@ -1,0 +1,107 @@
+<!--
+ * Name: create-link.html
+ * Author: Tango Hunter
+ * Date Created: 8/30/26
+ * Description: Administrative registration-link management page.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Registration Link</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<main class="container">
+
+    <header class="page-header">
+        <div class="page-header-content">
+            <div>
+                <h1>Registration Link Management</h1>
+                <p class="page-description">
+                    Generate temporary authorization links for new broadcasters.
+                </p>
+            </div>
+
+            <button id="logout-button" class="btn-danger" type="button">
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <section class="top-grid">
+
+        <div class="info-card">
+            <div class="card-content">
+                <h2>User Registration</h2>
+                <p>
+                    Creates a standard registration link with Twitch chat access.
+                    The link remains valid for 10 minutes and may be used once.
+                </p>
+            </div>
+
+            <button
+                id="create-user-link-button"
+                class="btn-primary"
+                type="button"
+            >
+                Generate User Link
+            </button>
+        </div>
+
+        <div class="info-card">
+            <div class="card-content">
+                <h2>SYNARA User Registration</h2>
+                <p>
+                    Grants the additional Twitch permission required for SYNARA
+                    to send chat messages. Use this only when the user is
+                    intentionally registering for SYNARA.
+                </p>
+            </div>
+
+            <button
+                id="create-synara-link-button"
+                class="btn-primary"
+                type="button"
+            >
+                Generate SYNARA Link
+            </button>
+        </div>
+
+    </section>
+
+    <section class="settings-column registration-links">
+
+        <div class="column-header">
+            <h2>Active Links</h2>
+            <p>
+                Links are automatically removed when they expire or are used.
+                A maximum of 3 active links may exist at once.
+            </p>
+        </div>
+
+        <div id="links-container" class="links-container">
+
+            <div id="empty-state" class="empty-state">
+                No active registration links.
+            </div>
+
+        </div>
+
+        <div id="link-count" class="connection-status">
+            0 / 3 Active
+        </div>
+
+    </section>
+
+</main>
+
+<div id="status" class="status"></div>
+
+<script src="scripts/create-link.js" defer></script>
+
+</body>
+</html>

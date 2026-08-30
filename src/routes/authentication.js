@@ -1,33 +1,43 @@
 /*
+ * ============================================================================
  * Name: authentication.js
  * Author: Tango Hunter
- * Date: 8/26/26
+ * Date: 8/30/26
  * Description: Express routes for operator authentication and session management.
+ * ============================================================================
  */
 
 import express from "express";
 import crypto from "node:crypto";
 import { promisify } from "node:util";
+
 import config from "../configs/config.js";
+
 import {
     isSessionAuthenticated
 } from "../auth/require-authentication.js";
+
+import {
+    getUserByUsername
+} from "../database/registered-users-repository.js";
 
 
 /*==============================================================================
     ROUTER
 ==============================================================================*/
 
-const router = express.Router();
+const router =
+    express.Router();
 
 
 /*==============================================================================
     CONFIGURATION
 ==============================================================================*/
 
-const scryptAsync = promisify(
-    crypto.scrypt
-);
+const scryptAsync =
+    promisify(
+        crypto.scrypt
+    );
 
 
 /*==============================================================================
@@ -40,15 +50,20 @@ function safeCompare(
 ) {
 
     const valueBuffer =
-        Buffer.from(value);
+        Buffer.from(
+            value
+        );
 
     const expectedBuffer =
-        Buffer.from(expected);
+        Buffer.from(
+            expected
+        );
 
     if (
         valueBuffer.length !==
         expectedBuffer.length
     ) {
+
         return false;
     }
 
@@ -72,16 +87,22 @@ async function verifyPassword(
         !password ||
         !storedHash
     ) {
+
         return false;
     }
 
     const parts =
-        storedHash.split("$");
+        storedHash.split(
+            "$"
+        );
 
     if (
-        parts.length !== 6 ||
-        parts[0] !== "scrypt"
+        parts.length !==
+            6 ||
+        parts[0] !==
+            "scrypt"
     ) {
+
         console.error(
             "Invalid password hash format."
         );
@@ -89,12 +110,26 @@ async function verifyPassword(
         return false;
     }
 
-    const N = Number(parts[1]);
-    const r = Number(parts[2]);
-    const p = Number(parts[3]);
+    const N =
+        Number(
+            parts[1]
+        );
 
-    const salt = parts[4];
-    const expectedHash = parts[5];
+    const r =
+        Number(
+            parts[2]
+        );
+
+    const p =
+        Number(
+            parts[3]
+        );
+
+    const salt =
+        parts[4];
+
+    const expectedHash =
+        parts[5];
 
     if (
         !N ||
@@ -103,6 +138,7 @@ async function verifyPassword(
         !salt ||
         !expectedHash
     ) {
+
         return false;
     }
 
@@ -130,6 +166,7 @@ async function verifyPassword(
             derivedKey.length !==
             expectedBuffer.length
         ) {
+
             return false;
         }
 
@@ -138,8 +175,7 @@ async function verifyPassword(
             expectedBuffer
         );
 
-    }
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Password verification failed.",
@@ -178,41 +214,106 @@ router.post(
         } = req.body;
 
         if (
-            typeof username !== "string" ||
-            typeof password !== "string"
+            typeof username !==
+                "string" ||
+            typeof password !==
+                "string"
         ) {
 
-            return res.status(400).json({
+            return res.status(
+                400
+            ).json({
                 authenticated: false,
-                message: "Invalid credentials."
+                message:
+                    "Invalid credentials."
             });
         }
 
-        const usernameMatches =
-            safeCompare(
-                username,
-                config.auth.username
+        let authenticated =
+            false;
+
+        let sessionOperator =
+            username;
+
+        let twitchUserId =
+            null;
+
+        /*
+         * Check registered database users first.
+         */
+
+        const registeredUser =
+            await getUserByUsername(
+                username
             );
 
-        if (!usernameMatches) {
+        if (
+            registeredUser &&
+            registeredUser.enabled
+        ) {
 
-            return res.status(401).json({
-                authenticated: false,
-                message: "Authentication failed."
-            });
+            authenticated =
+                await verifyPassword(
+                    password,
+                    registeredUser.password_hash
+                );
+
+            if (
+                authenticated
+            ) {
+
+                sessionOperator =
+                    registeredUser.username;
+
+                twitchUserId =
+                    registeredUser.twitch_user_id;
+            }
         }
 
-        const passwordMatches =
-            await verifyPassword(
-                password,
-                config.auth.passwordHash
-            );
+        /*
+         * Preserve the existing .env operator credentials.
+         */
 
-        if (!passwordMatches) {
+        if (
+            !authenticated
+        ) {
 
-            return res.status(401).json({
+            const usernameMatches =
+                safeCompare(
+                    username,
+                    config.auth.username
+                );
+
+            if (
+                usernameMatches
+            ) {
+
+                authenticated =
+                    await verifyPassword(
+                        password,
+                        config.auth.passwordHash
+                    );
+
+                if (
+                    authenticated
+                ) {
+
+                    sessionOperator =
+                        config.auth.username;
+                }
+            }
+        }
+
+        if (
+            !authenticated
+        ) {
+
+            return res.status(
+                401
+            ).json({
                 authenticated: false,
-                message: "Authentication failed."
+                message:
+                    "Authentication failed."
             });
         }
 
@@ -224,16 +325,21 @@ router.post(
         req.session.regenerate(
             error => {
 
-                if (error) {
+                if (
+                    error
+                ) {
 
                     console.error(
                         "Failed to regenerate authentication session.",
                         error
                     );
 
-                    return res.status(500).json({
+                    return res.status(
+                        500
+                    ).json({
                         authenticated: false,
-                        message: "Authentication system failure."
+                        message:
+                            "Authentication system failure."
                     });
                 }
 
@@ -241,7 +347,10 @@ router.post(
                     true;
 
                 req.session.operator =
-                    config.auth.username;
+                    sessionOperator;
+
+                req.session.twitchUserId =
+                    twitchUserId;
 
                 req.session.createdAt =
                     Date.now();
@@ -252,20 +361,27 @@ router.post(
                 req.session.save(
                     saveError => {
 
-                        if (saveError) {
+                        if (
+                            saveError
+                        ) {
 
                             console.error(
                                 "Failed to save authentication session.",
                                 saveError
                             );
 
-                            return res.status(500).json({
+                            return res.status(
+                                500
+                            ).json({
                                 authenticated: false,
-                                message: "Authentication system failure."
+                                message:
+                                    "Authentication system failure."
                             });
                         }
 
-                        return res.status(200).json({
+                        return res.status(
+                            200
+                        ).json({
                             authenticated: true
                         });
                     }
@@ -285,18 +401,23 @@ router.get(
     (req, res) => {
 
         if (
-            !isSessionAuthenticated(req.session)
+            !isSessionAuthenticated(
+                req.session
+            )
         ) {
 
             if (
                 req.session
             ) {
+
                 req.session.destroy(
                     () => {}
                 );
             }
 
-            return res.status(401).json({
+            return res.status(
+                401
+            ).json({
                 authenticated: false
             });
         }
@@ -308,21 +429,31 @@ router.get(
         req.session.save(
             error => {
 
-                if (error) {
+                if (
+                    error
+                ) {
 
                     console.error(
                         "Failed to update authentication session.",
                         error
                     );
 
-                    return res.status(500).json({
+                    return res.status(
+                        500
+                    ).json({
                         authenticated: false,
-                        message: "Authentication system failure."
+                        message:
+                            "Authentication system failure."
                     });
                 }
 
-                return res.status(200).json({
-                    authenticated: true
+                return res.status(
+                    200
+                ).json({
+                    authenticated: true,
+                    twitchUserId:
+                        req.session.twitchUserId ||
+                        null
                 });
             }
         );
@@ -341,16 +472,21 @@ router.post(
         req.session.destroy(
             error => {
 
-                if (error) {
+                if (
+                    error
+                ) {
 
                     console.error(
                         "Failed to destroy authentication session.",
                         error
                     );
 
-                    return res.status(500).json({
+                    return res.status(
+                        500
+                    ).json({
                         authenticated: false,
-                        message: "Logout failed."
+                        message:
+                            "Logout failed."
                     });
                 }
 
@@ -358,13 +494,18 @@ router.post(
                     config.auth.sessionCookieName,
                     {
                         httpOnly: true,
-                        secure: config.server.environment === "production",
-                        sameSite: "strict",
+                        secure:
+                            config.server.environment ===
+                            "production",
+                        sameSite:
+                            "strict",
                         path: "/"
                     }
                 );
 
-                return res.status(200).json({
+                return res.status(
+                    200
+                ).json({
                     authenticated: false
                 });
             }

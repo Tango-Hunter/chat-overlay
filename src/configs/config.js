@@ -67,13 +67,22 @@ const auth = {
 };
 
 /*
+ * Domain configuration
+ * Local Deployment: http://localhost:3000
+ * Live Deployment: https://overlay.tangohunter.com
+ */
+const app = {
+    url: process.env.APP_URL
+}
+
+/*
  * Twitch configuration
  */
 
 const twitch = {
     clientId: process.env.TWITCH_CLIENT_ID,
     clientSecret: process.env.TWITCH_CLIENT_SECRET,
-    eventSubSecret: process.env.TWITCH_EVENTSUB_SECRET,
+    redirectUri: process.env.TWITCH_REDIRECT_URI,
     tokenEncryptionKey: process.env.TWITCH_TOKEN_ENCRYPTION_KEY
 };
 
@@ -84,6 +93,7 @@ const config = Object.freeze({
     server,
     database,
     auth,
+    app,
     twitch
 });
 

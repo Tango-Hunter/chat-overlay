@@ -1,0 +1,251 @@
+<!--
+ * ============================================================================
+ * Name: registration.html
+ * Author: Tango Hunter
+ * Date: 8/30/26
+ * Description: Broadcaster account registration page.
+ * ============================================================================
+ -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Register Account</title>
+
+    <link
+        rel="stylesheet"
+        href="styles/main.css"
+    >
+
+</head>
+
+<body>
+
+<main class="container">
+
+    <section class="settings-column">
+
+        <div class="column-header">
+
+            <h1>Account Registration</h1>
+
+            <p id="registration-description">
+                Create your broadcaster account.
+            </p>
+
+        </div>
+
+
+        <!-- ================================================================
+             INVALID LINK
+        ================================================================= -->
+
+        <div
+            id="invalid-state"
+            class="info-card"
+            style="display: none;"
+        >
+
+            <div class="card-content">
+
+                <h2>Registration Link Invalid</h2>
+
+                <p id="invalid-message">
+                    This registration link is invalid or has expired.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================================
+             REGISTRATION FORM
+        ================================================================= -->
+
+        <form
+            id="registration-form"
+            class="info-card"
+            style="display: none;"
+        >
+
+            <div class="card-content">
+
+                <h2>Create Your Account</h2>
+
+                <p>
+                    Choose the credentials you will use to access the
+                    Digital Terminal Chat Overlay.
+                </p>
+
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    autocomplete="username"
+                    minlength="3"
+                    maxlength="50"
+                    required
+                >
+
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="12"
+                    required
+                >
+
+
+                <label for="confirm-password">
+                    Confirm Password
+                </label>
+
+                <input
+                    id="confirm-password"
+                    name="confirmPassword"
+                    type="password"
+                    autocomplete="new-password"
+                    minlength="12"
+                    required
+                >
+
+            </div>
+
+
+            <div class="registration-actions">
+
+                <button
+                    id="connect-twitch-button"
+                    class="btn-primary"
+                    type="submit"
+                >
+                    Continue to Twitch
+                </button>
+
+            </div>
+
+        </form>
+
+
+        <!-- ================================================================
+             TWITCH AUTHORIZATION
+        ================================================================= -->
+
+        <div
+            id="twitch-state"
+            class="info-card"
+            style="display: none;"
+        >
+
+            <div class="card-content">
+
+                <h2>Twitch Authorization</h2>
+
+                <p id="twitch-message">
+                    Waiting for Twitch authorization.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================================
+             COMPLETE REGISTRATION
+        ================================================================= -->
+
+        <div
+            id="completion-state"
+            class="info-card"
+            style="display: none;"
+        >
+
+            <div class="card-content">
+
+                <h2>Complete Registration</h2>
+
+                <p id="completion-message">
+                    Your Twitch account has been connected.
+                </p>
+
+            </div>
+
+            <div class="registration-actions">
+
+                <button
+                    id="complete-registration-button"
+                    class="btn-primary"
+                    type="button"
+                >
+                    Complete Registration
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================================
+             SUCCESS
+        ================================================================= -->
+
+        <div
+            id="success-state"
+            class="info-card"
+            style="display: none;"
+        >
+
+            <div class="card-content">
+
+                <h2>Registration Complete</h2>
+
+                <p>
+                    Your account has been created successfully.
+                </p>
+
+                <p id="success-details"></p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<div
+    id="status"
+    class="status"
+></div>
+
+
+<script
+    src="scripts/registration.js"
+    defer
+></script>
+
+</body>
+
+</html>

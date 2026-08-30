@@ -17,6 +17,8 @@ import config from "./configs/config.js";
 import { initializeDatabase } from "./database/init-database.js";
 import overlaySettingsRoutes from "./routes/overlay-settings.js";
 import authenticationRoutes from "./routes/authentication.js";
+import registrationRoutes from "./routes/registration.js";
+import twitchRoutes from "./routes/twitch.js";
 import {
     requireAuthentication,
     requirePageAuthentication
@@ -31,7 +33,7 @@ const PostgreSQLStore = pgSession(session);
 const sessionStore =
     new PostgreSQLStore({
         pool: config.database,
-        tableName: "operator_sessions",
+        tableName: "chat_overlay_operator_sessions",
         createTableIfMissing: false
     });
 
@@ -78,7 +80,7 @@ app.use(
             secure: environment === "production",
             sameSite: "strict",
             path: "/",
-            maxAge: 30 * 60 * 1000
+            maxAge: 8 * 60 * 60 * 1000
         }
     })
 );
@@ -119,13 +121,18 @@ app.use(
 
 /*
  * ==============================================================================
- *     AUTHENTICATION ROUTES
+ *     AUTHENTICATION/REGISTRATION ROUTES
  * ==============================================================================
  */
 
 app.use(
     "/api/auth",
     authenticationRoutes
+);
+
+app.use(
+    "/api/registration",
+    registrationRoutes
 );
 
 
@@ -140,6 +147,18 @@ app.use(
     requireAuthentication,
     overlaySettingsRoutes
 );
+
+
+/*
+ * ==============================================================================
+ *     TWITCH ROUTES
+ * ==============================================================================
+ */
+app.use(
+    "/api/twitch",
+    twitchRoutes
+);
+
 
 /*
  * Root endpoint
