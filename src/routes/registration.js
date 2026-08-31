@@ -29,6 +29,7 @@ import {
 } from "../database/settings-repository.js";
 
 import {
+    getRegistrationLink,
     getPendingTwitchAuthorization,
     consumePendingTwitchAuthorization
 } from "./twitch.js";
@@ -652,6 +653,22 @@ router.post(
         const username =
             registrationUsername;
 
+        const registrationLink =
+            getRegistrationLink(
+                token
+            );
+
+        if (
+            !registrationLink
+        ) {
+            return res.status(
+                410
+            ).json({
+                message:
+                    "The registration link is invalid or has expired."
+            });
+        }
+
         const pendingAuthorization =
             getPendingTwitchAuthorization(
                 req
@@ -761,7 +778,8 @@ router.post(
             try {
 
                 await createDefaultSettings(
-                    pendingAuthorization.twitchUserId
+                    pendingAuthorization.twitchUserId,
+                    pendingAuthorization.scopes
                 );
 
             } catch (settingsError) {

@@ -539,18 +539,30 @@ export async function getSettings(twitchUserId) {
  * ============================================================================
  */
 
-export async function createDefaultSettings(twitchUserId) {
+export async function createDefaultSettings(
+    twitchUserId,
+    twitchScopes = []
+) {
 
     if (!twitchUserId) {
-        throw new TypeError("Twitch user ID is required.");
+        throw new TypeError(
+            "Twitch user ID is required."
+        );
     }
 
-    const isAdministrator =
-        twitchUserId === config.auth.administrator;
+    const hasSynaraChatScope =
+        Array.isArray(twitchScopes) &&
+        twitchScopes.includes(
+            "user:write:chat"
+        );
 
-    const settings = isAdministrator
-        ? [...DEFAULT_SETTINGS, ...SYNARA_SETTINGS]
-        : DEFAULT_SETTINGS;
+    const settings =
+        hasSynaraChatScope
+            ? [
+                ...DEFAULT_SETTINGS,
+                ...SYNARA_SETTINGS
+            ]
+            : DEFAULT_SETTINGS;
 
     const client = await database.connect();
 
