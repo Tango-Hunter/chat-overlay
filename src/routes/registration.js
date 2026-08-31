@@ -29,7 +29,6 @@ import {
 } from "../database/settings-repository.js";
 
 import {
-    getRegistrationLink,
     getPendingTwitchAuthorization,
     consumePendingTwitchAuthorization
 } from "./twitch.js";
