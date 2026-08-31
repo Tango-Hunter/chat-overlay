@@ -78,7 +78,7 @@ app.use(
         cookie: {
             httpOnly: true,
             secure: environment === "production",
-            sameSite: "strict",
+            sameSite: "lax",
             path: "/",
             maxAge: 8 * 60 * 60 * 1000
         }
@@ -91,7 +91,7 @@ app.use(
 ==============================================================================*/
 
 app.get(
-    "/overlay-settings.html",
+    "/overlay-settings",
     requirePageAuthentication,
     (req, res) => {
         res.sendFile(
@@ -149,19 +149,6 @@ app.get(
     }
 );
 
-app.get(
-    "/create-link.html",
-    (req, res) => {
-        res.sendFile(
-            path.join(
-                __dirname,
-                "public",
-                "create-link.html"
-            )
-        );
-    }
-);
-
 
 /*==============================================================================
     REGISTRATION PAGE
@@ -180,14 +167,35 @@ app.get(
     }
 );
 
+/*==============================================================================
+    AUTHENTICATION PAGE
+==============================================================================*/
+
 app.get(
-    "/registration.html",
+    "/authentication",
     (req, res) => {
         res.sendFile(
             path.join(
                 __dirname,
                 "public",
-                "registration.html"
+                "authentication.html"
+            )
+        );
+    }
+);
+
+/*==============================================================================
+    STATUS PAGE
+==============================================================================*/
+
+app.get(
+    "/status",
+    (req, res) => {
+        res.sendFile(
+            path.join(
+                __dirname,
+                "public",
+                "status.html"
             )
         );
     }

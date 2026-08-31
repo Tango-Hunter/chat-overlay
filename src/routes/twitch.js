@@ -458,6 +458,9 @@ router.get(
             registrationType:
                 authorization.registrationType,
 
+            registrationUsername:
+                req.session.registrationUsername,
+
             twitchUserId:
                 authorization.twitchUserId,
 

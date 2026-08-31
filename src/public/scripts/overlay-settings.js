@@ -151,7 +151,7 @@ async function logout() {
             );
         }
 
-        window.location.href = "/status.html?type=logged-out";
+        window.location.href = "/status?type=logged-out";
 
     }
     catch (error) {
@@ -194,7 +194,7 @@ async function loadSettings() {
 
         if (response.status === 401) {
             window.location.href =
-                `/authentication.html?return=${encodeURIComponent(
+                `/authentication?return=${encodeURIComponent(
                     window.location.pathname
                 )}`;
 
@@ -1165,7 +1165,7 @@ async function saveSettings() {
 
         if (response.status === 401) {
             window.location.href =
-                `/authentication.html?return=${encodeURIComponent(
+                `/authentication?return=${encodeURIComponent(
                     window.location.pathname
                 )}`;
 
@@ -1250,7 +1250,7 @@ async function resetDefaults() {
 
         if (response.status === 401) {
             window.location.href =
-                `/authentication.html?return=${encodeURIComponent(
+                `/authentication?return=${encodeURIComponent(
                     window.location.pathname
                 )}`;
 

@@ -239,7 +239,7 @@ function displayRegistrationType(
     START TWITCH OAUTH
 ==============================================================================*/
 
-function startTwitchOAuth() {
+async function startTwitchOAuth() {
 
     if (!token) {
 
@@ -313,15 +313,79 @@ function startTwitchOAuth() {
         "block";
 
     twitchMessage.textContent =
-        "Redirecting to Twitch for authorization...";
+        "Preparing registration...";
 
-    registrationForm.style.display =
-        "none";
+    try {
 
-    window.location.href =
-        `/api/twitch/oauth/start?token=${encodeURIComponent(
-            token
-        )}`;
+        const response =
+            await fetch(
+                "/api/registration/prepare",
+                {
+                    method:
+                        "POST",
+
+                    credentials:
+                        "same-origin",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            token,
+                            username,
+                            password
+                        })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (
+            !response.ok
+        ) {
+
+            throw new Error(
+                data.message ||
+                "Unable to prepare registration."
+            );
+        }
+
+        twitchMessage.textContent =
+            "Redirecting to Twitch for authorization...";
+
+        registrationForm.style.display =
+            "none";
+
+        window.location.href =
+            `/api/twitch/oauth/start?token=${encodeURIComponent(
+                token
+            )}`;
+
+    } catch (error) {
+
+        console.error(
+            "Failed to prepare registration:",
+            error
+        );
+
+        showStatus(
+            error.message,
+            "error"
+        );
+
+        connectTwitchButton.disabled =
+            false;
+
+        twitchState.style.display =
+            "none";
+    }
 }
 
 
@@ -415,31 +479,6 @@ async function completeRegistration() {
 
     try {
 
-        const username =
-            document.getElementById(
-                "username"
-            ).value.trim();
-
-        const password =
-            document.getElementById(
-                "password"
-            ).value;
-
-        const confirmPassword =
-            document.getElementById(
-                "confirm-password"
-            ).value;
-
-        if (
-            password !==
-            confirmPassword
-        ) {
-
-            throw new Error(
-                "Passwords do not match."
-            );
-        }
-
         const response =
             await fetch(
                 "/api/registration/create",
@@ -451,16 +490,9 @@ async function completeRegistration() {
                         "same-origin",
 
                     headers: {
-                        "Content-Type":
+                        "Accept":
                             "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-                            token,
-                            username,
-                            password
-                        })
+                    }
                 }
             );
 

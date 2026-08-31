@@ -443,11 +443,11 @@ router.get(
 
 
 /*==============================================================================
-    CREATE REGISTERED USER
+    PREPARE REGISTRATION
 ==============================================================================*/
 
 router.post(
-    "/create",
+    "/prepare",
     async (req, res) => {
 
         const {
@@ -457,12 +457,9 @@ router.post(
         } = req.body || {};
 
         if (
-            typeof token !==
-                "string" ||
-            typeof username !==
-                "string" ||
-            typeof password !==
-                "string"
+            typeof token !== "string" ||
+            typeof username !== "string" ||
+            typeof password !== "string"
         ) {
 
             return res.status(
@@ -492,10 +489,8 @@ router.post(
             username.trim();
 
         if (
-            normalizedUsername.length <
-                3 ||
-            normalizedUsername.length >
-                50
+            normalizedUsername.length < 3 ||
+            normalizedUsername.length > 50
         ) {
 
             return res.status(
@@ -507,8 +502,7 @@ router.post(
         }
 
         if (
-            password.length <
-            12
+            password.length < 12
         ) {
 
             return res.status(
@@ -518,6 +512,143 @@ router.post(
                     "Password must be at least 12 characters."
             });
         }
+
+        try {
+
+            const existingUsername =
+                await getUserByUsername(
+                    normalizedUsername
+                );
+
+            if (
+                existingUsername
+            ) {
+
+                return res.status(
+                    409
+                ).json({
+                    message:
+                        "That username is already registered."
+                });
+            }
+
+            const passwordHash =
+                await hashPassword(
+                    password
+                );
+
+            req.session.registrationToken =
+                token;
+
+            req.session.registrationType =
+                registrationLink.registrationType;
+
+            req.session.registrationUsername =
+                normalizedUsername;
+
+            req.session.registrationPasswordHash =
+                passwordHash;
+
+            req.session.registrationExpiresAt =
+                Date.now() +
+                REGISTRATION_LINK_LIFETIME;
+
+            await new Promise(
+                (
+                    resolve,
+                    reject
+                ) => {
+
+                    req.session.save(
+                        error => {
+
+                            if (
+                                error
+                            ) {
+                                reject(
+                                    error
+                                );
+                            } else {
+                                resolve();
+                            }
+                        }
+                    );
+
+                }
+            );
+
+            return res.status(
+                200
+            ).json({
+                success: true
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Failed to prepare registration.",
+                error
+            );
+
+            return res.status(
+                500
+            ).json({
+                message:
+                    "Unable to prepare account registration."
+            });
+        }
+    }
+);
+
+
+/*==============================================================================
+    CREATE REGISTERED USER
+==============================================================================*/
+
+router.post(
+    "/create",
+    async (req, res) => {
+
+        const {
+            registrationToken,
+            registrationUsername,
+            registrationPasswordHash,
+            registrationExpiresAt
+        } = req.session;
+
+        if (
+            !registrationToken ||
+            !registrationUsername ||
+            !registrationPasswordHash ||
+            !registrationExpiresAt
+        ) {
+
+            return res.status(
+                400
+            ).json({
+                message:
+                    "Registration session is missing or invalid. Please restart registration."
+            });
+        }
+
+        if (
+            Date.now() >
+            Number(registrationExpiresAt)
+        ) {
+
+            return res.status(
+                410
+            ).json({
+                message:
+                    "The registration session has expired. Please restart registration."
+            });
+        }
+
+        const token =
+            registrationToken;
+
+        const username =
+            registrationUsername;
 
         const pendingAuthorization =
             getPendingTwitchAuthorization(
@@ -597,9 +728,7 @@ router.post(
             }
 
             const passwordHash =
-                await hashPassword(
-                    password
-                );
+                registrationPasswordHash;
 
             const user =
                 await createUser({

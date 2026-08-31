@@ -530,7 +530,7 @@ async function logout() {
         }
 
         window.location.href =
-            "/status?state=logged-out";
+            "/status?type=logged-out";
 
     } catch (error) {
 

@@ -117,7 +117,7 @@ export async function requirePageAuthentication(req, res, next) {
             );
 
         return res.redirect(
-            `/authentication.html?return=${returnPath}`
+            `/authentication?return=${returnPath}`
         );
     }
 

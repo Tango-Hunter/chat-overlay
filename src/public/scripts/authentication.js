@@ -149,7 +149,7 @@ function redirectToRequestedPage() {
 ==============================================================================*/
 
 function handleExit() {
-    window.location.assign("/status.html?type=access-terminated");
+    window.location.assign("/status?type=access-terminated");
 }
 
 
