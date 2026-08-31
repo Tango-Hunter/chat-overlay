@@ -239,8 +239,6 @@ router.get(
             req.session.registrationType;
 
         delete req.session.twitchOAuthState;
-        delete req.session.registrationToken;
-        delete req.session.registrationType;
 
         if (
             !expectedState ||

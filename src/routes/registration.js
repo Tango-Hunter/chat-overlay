@@ -611,6 +611,7 @@ router.post(
 
         const {
             registrationToken,
+            registrationType,
             registrationUsername,
             registrationPasswordHash,
             registrationExpiresAt
@@ -618,6 +619,7 @@ router.post(
 
         if (
             !registrationToken ||
+            !registrationType ||
             !registrationUsername ||
             !registrationPasswordHash ||
             !registrationExpiresAt
@@ -680,7 +682,7 @@ router.post(
 
         if (
             pendingAuthorization.registrationType !==
-            registrationLink.registrationType
+            registrationType
         ) {
 
             return res.status(
@@ -695,7 +697,7 @@ router.post(
 
             const existingUsername =
                 await getUserByUsername(
-                    normalizedUsername
+                    username
                 );
 
             if (
@@ -733,7 +735,7 @@ router.post(
             const user =
                 await createUser({
                     username:
-                        normalizedUsername,
+                        username,
 
                     passwordHash,
 
