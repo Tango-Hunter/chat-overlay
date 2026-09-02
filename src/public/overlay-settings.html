@@ -48,19 +48,25 @@
 
                 <div class="user-actions">
 
-                    <div
+                    <button
                         id="twitchDisplayName"
-                        class="twitch-display-name"
-                        title="Twitch Account"
+                        class="account-menu-button"
+                        type="button"
+                        title="Account Menu"
                     >
                         Loading...
-                    </div>
-
+                        <span
+                            class="account-menu-arrow"
+                            aria-hidden="true"
+                        >
+                            ▼
+                        </span>
+                    </button>
 
                     <button
                         id="logoutBtn"
                         type="button"
-                        class="btn-secondary"
+                        class="btn-danger"
                     >
                         Logout
                     </button>
