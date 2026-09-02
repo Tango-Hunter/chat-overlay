@@ -1,32 +1,52 @@
 <!--
+ * ============================================================================
  * Name: authentication.html
  * Author: Tango Hunter
  * Date Created: 8/27/26
- * Description: Primary Operator authentication interface.
+ * Description: Chat Overlay user authentication interface.
+ * ============================================================================
 -->
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
-    <title>Digital Terminal | Authentication</title>
-    <link href="styles/main.css" rel="stylesheet"/>
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="robots"
+        content="noindex, nofollow"
+    >
+
+    <title>Chat Overlay | Log On</title>
+
+    <link
+        href="styles/main.css"
+        rel="stylesheet"
+    >
+
 </head>
 
 <body>
 
-    <main class="container">
+    <main class="container authentication-container">
 
         <!-- PAGE HEADER -->
 
-        <header class="page-header">
-            <h1>Primary Operator Authentication</h1>
+        <header class="page-header authentication-header">
+
+            <h1>Chat Overlay</h1>
+
             <p class="page-description">
-                Enter Credentials for access.
+                Log on to manage your chat overlay settings.
             </p>
+
         </header>
 
 
@@ -35,34 +55,62 @@
         <section class="authentication-card">
 
             <div class="card-header">
-                <h2>Enter Credentials</h2>
-                <p>Primary Operator authorization is required.</p>
+
+                <h2>Log On</h2>
+
+                <p>
+                    Enter your account credentials to continue.
+                </p>
+
             </div>
 
-            <form id="authenticationForm" autocomplete="off" novalidate>
+
+            <form
+                id="authenticationForm"
+                autocomplete="on"
+                novalidate
+            >
+
+                <!-- USERNAME -->
 
                 <div class="form-group">
-                    <label for="username">Username</label>
+
+                    <label for="username">
+                        Username
+                    </label>
+
                     <input
                         type="password"
                         id="username"
                         name="username"
-                        autocomplete="off"
+                        autocomplete="username"
                         spellcheck="false"
                         required
                     >
+
                 </div>
 
+
+                <!-- PASSWORD -->
+
                 <div class="form-group">
-                    <label for="password">Password</label>
+
+                    <label for="password">
+                        Password
+                    </label>
+
                     <input
                         type="password"
                         id="password"
                         name="password"
-                        autocomplete="off"
+                        autocomplete="current-password"
                         required
                     >
+
                 </div>
+
+
+                <!-- MESSAGE -->
 
                 <div
                     id="authenticationMessage"
@@ -71,14 +119,27 @@
                     aria-live="assertive"
                 ></div>
 
+
+                <!-- ACTIONS -->
+
                 <div class="action-buttons">
-                    <button id="authenticateBtn" type="submit" class="btn-primary">
-                        Authenticate
+
+                    <button
+                        id="authenticateBtn"
+                        type="submit"
+                        class="btn-primary"
+                    >
+                        Log On
                     </button>
 
-                    <button id="exitBtn" type="button" class="btn-secondary">
+                    <button
+                        id="exitBtn"
+                        type="button"
+                        class="btn-secondary"
+                    >
                         Exit
                     </button>
+
                 </div>
 
             </form>
@@ -86,22 +147,29 @@
         </section>
 
 
-        <!-- SECURITY NOTICE -->
+        <!-- ACCOUNT NOTICE -->
 
-        <section class="notice-card">
-            <h2>Access Notice</h2>
+        <section class="notice-card authentication-notice">
+
+            <h2>Account Access</h2>
+
             <p>
-                This interface is restricted to the Primary Operator.
-                Unauthorized access is prohibited.
+                Your account credentials are required to access and manage
+                your chat overlay.
             </p>
+
             <p>
-                All authentication attempts are processed by the application server.
+                Authentication is processed securely by the application
+                server.
             </p>
+
         </section>
 
     </main>
 
-    <script src="scripts/authentication.js"></script>
+
+    <script src="scripts/logon.js"></script>
 
 </body>
+
 </html>

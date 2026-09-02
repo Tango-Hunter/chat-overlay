@@ -72,7 +72,15 @@ const auth = {
  * Live Deployment: https://overlay.tangohunter.com
  */
 const app = {
-    url: process.env.APP_URL
+    url: process.env.APP_URL,
+
+    /*
+     * Controls whether enabled Twitch user tokens are checked when the application starts.
+     *
+     * Keep false during normal development.
+     * Change to true before production launch.
+     */
+    refreshOnStartup: false
 }
 
 /*

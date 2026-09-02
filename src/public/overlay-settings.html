@@ -1,100 +1,175 @@
 <!--
-Name: overlay-settings.html
-Author: Tango Hunter
-Date Created: 8/26/26
-Description: Public-facing settings manager for the Digital Terminal Chat Overlay.
--->
-
-
-<!-- ==============================================================
-        Local Link: http://localhost:3000/overlay-settings.html
-============================================================== -->
-
+ * Name: overlay-settings.html
+ * Author: Tango Hunter
+ * Date Created: 8/26/26
+ * Description: Public-facing settings manager for the Chat Overlay.
+ -->
 
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Terminal | Overlay Settings</title>
-    <link href="styles/main.css"rel="stylesheet"/>
+    <title>Chat Overlay | Settings</title>
+    <link rel="stylesheet" href="styles/main.css">
+
 </head>
 
 
 <body>
 
-    <div id="top"></div>
-
-
     <main class="container">
 
 
-        <!-- ==============================================================
+        <!-- ================================================================
              PAGE HEADER
-        ============================================================== -->
+        ================================================================= -->
 
         <header class="page-header">
 
             <div class="page-header-content">
+
                 <div>
-                    <h1>Overlay Settings</h1>
+
+                    <h1>
+                        Overlay Settings
+                    </h1>
 
                     <p class="page-description">
-                        Configure the appearance, behavior, and effects of the Digital Terminal Chat Overlay.
+                        Configure the appearance and behavior of your
+                        Chat Overlay.
                     </p>
+
                 </div>
 
-                <button id="logoutBtn" type="button" class="btn-secondary">
-                    Logout
-                </button>
+
+                <div class="user-actions">
+
+                    <div
+                        id="twitchDisplayName"
+                        class="twitch-display-name"
+                        title="Twitch Account"
+                    >
+                        Loading...
+                    </div>
+
+
+                    <button
+                        id="logoutBtn"
+                        type="button"
+                        class="btn-secondary"
+                    >
+                        Logout
+                    </button>
+
+                </div>
+
             </div>
 
         </header>
 
 
-        <!-- ==============================================================
+        <!-- ================================================================
+             OVERLAY LINK
+        ================================================================= -->
+
+        <section class="overlay-link-card">
+
+            <div class="overlay-link-content">
+
+                <div>
+
+                    <h2>
+                        Your Overlay Link
+                    </h2>
+
+                    <p>
+                        Add this URL to an OBS Browser Source.
+                    </p>
+
+                </div>
+
+
+                <div class="overlay-link-controls">
+
+                    <input
+                        id="overlayLink"
+                        class="overlay-link-input"
+                        type="text"
+                        readonly
+                        value="Loading..."
+                    >
+
+
+                    <button
+                        id="copyOverlayLinkBtn"
+                        type="button"
+                        class="btn-primary"
+                    >
+                        Copy Link
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================================================================
              INFORMATION / ACTIONS
-        ============================================================== -->
+        ================================================================= -->
 
         <section class="top-grid">
 
 
-            <!-- ==========================================================
+            <!-- ============================================================
                  CHAT OVERLAY CONFIGURATION
-            =========================================================== -->
+            ============================================================= -->
 
             <div class="info-card">
 
                 <div class="card-content">
 
-                    <h2>Chat Overlay Configuration</h2>
+                    <h2>
+                        Chat Overlay Configuration
+                    </h2>
 
                     <p>
-                        Changes made here are applied directly to the live overlay configuration.
+                        Changes are saved to your personal overlay configuration.
                     </p>
 
                 </div>
 
-                <div id="connectionStatus" class="connection-status">
+
+                <div
+                    id="connectionStatus"
+                    class="connection-status"
+                >
                     Loading settings...
                 </div>
 
             </div>
 
 
-            <!-- ==========================================================
+            <!-- ============================================================
                  APPLY CHANGES
-            =========================================================== -->
+            ============================================================= -->
 
             <div class="info-card action-card">
 
                 <div class="card-content">
 
-                    <h2> Apply Changes</h2>
+                    <h2>
+                        Apply Changes
+                    </h2>
 
                     <p>
-                        Save your changes, discard your current edits, or restore all settings to their default values.
+                        Save your changes, discard your current edits,
+                        or restore settings to their default values.
                     </p>
 
                 </div>
@@ -102,15 +177,29 @@ Description: Public-facing settings manager for the Digital Terminal Chat Overla
 
                 <div class="action-buttons">
 
-                    <button id="saveBtn" type="button" class="btn-primary">
+                    <button
+                        id="saveBtn"
+                        type="button"
+                        class="btn-primary"
+                    >
                         Save
                     </button>
 
-                    <button id="cancelBtn" type="button" class="btn-secondary">
+
+                    <button
+                        id="cancelBtn"
+                        type="button"
+                        class="btn-secondary"
+                    >
                         Cancel
                     </button>
 
-                    <button id="resetBtn" type="button" class="btn-danger">
+
+                    <button
+                        id="resetBtn"
+                        type="button"
+                        class="btn-danger"
+                    >
                         Reset to Defaults
                     </button>
 
@@ -121,80 +210,24 @@ Description: Public-facing settings manager for the Digital Terminal Chat Overla
         </section>
 
 
-        <!-- ==============================================================
+        <!-- ================================================================
              SETTINGS FORM
-        ============================================================== -->
+        ================================================================= -->
 
         <form id="settingsForm" novalidate>
 
-            <section class="settings-layout">
+            <section
+                id="settingsContainer"
+                class="dynamic-settings-layout"
+            >
 
+                <div class="loading-state">
 
-                <!-- ======================================================
-                     CHAT SETTINGS
-                ======================================================= -->
+                    <div class="loading-spinner"></div>
 
-                <div class="settings-column">
-
-                    <div class="column-header">
-
-                        <h2>Chat Settings</h2>
-
-                        <p>
-                            Configure how chat messages appear and behave within the terminal.
-                        </p>
-
-                    </div>
-
-
-                    <div id="chatSettingsContainer" class="settings-container">
-
-                        <div class="loading-state">
-
-                            <div class="loading-spinner"></div>
-
-                            <p>
-                                Loading chat settings...
-                            </p>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                <!-- ======================================================
-                     OVERLAY EFFECTS
-                ======================================================= -->
-
-                <div class="settings-column">
-
-                    <div class="column-header">
-
-                        <h2>Overlay Effects</h2>
-
-                        <p>
-                            Configure the visual effects used by the terminal.
-                        </p>
-
-                    </div>
-
-
-                    <div id="effectsSettingsContainer" class="settings-container">
-
-                        <div class="loading-state">
-
-                            <div class="loading-spinner"></div>
-
-                            <p>
-                                Loading overlay effects...
-                            </p>
-
-                        </div>
-
-                    </div>
-
+                    <p>
+                        Loading overlay settings...
+                    </p>
 
                 </div>
 
@@ -203,21 +236,25 @@ Description: Public-facing settings manager for the Digital Terminal Chat Overla
         </form>
 
 
-        <!-- ==============================================================
+        <!-- ================================================================
              STATUS
-        ============================================================== -->
+        ================================================================= -->
 
-        <div id="status" class="status" role="status" aria-live="polite"></div>
-
+        <div
+            id="status"
+            class="status"
+            role="status"
+            aria-live="polite"
+        ></div>
 
     </main>
 
 
-    <!-- ==============================================================
+    <!-- ================================================================
          JAVASCRIPT
-    ============================================================== -->
+    ================================================================= -->
 
-    <script src="scripts/overlay-settings.js"></script>
+    <script src="scripts/settings-editor.js"></script>
 
 </body>
 

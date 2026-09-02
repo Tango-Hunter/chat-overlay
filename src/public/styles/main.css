@@ -410,6 +410,65 @@ button:disabled {
 
 
 /*==============================================================================
+    AUTHENTICATION
+==============================================================================*/
+
+.authentication-container {
+    max-width: 720px;
+    padding-top: 60px;
+}
+
+.authentication-header {
+    text-align: center;
+}
+
+.authentication-card {
+    width: 100%;
+}
+
+.authentication-card .card-header {
+    margin-bottom: 30px;
+}
+
+.authentication-card .card-header h2 {
+    margin-bottom: 8px;
+}
+
+.authentication-card .card-header p {
+    margin: 0;
+    color: #888;
+    line-height: 1.5;
+}
+
+.authentication-card .form-group input {
+    max-width: 100%;
+}
+
+.authentication-message {
+    min-height: 24px;
+    margin-bottom: 20px;
+    font-size: .9rem;
+    line-height: 1.5;
+}
+
+.authentication-message.success {
+    color: #4caf50;
+}
+
+.authentication-message.error {
+    color: #e53935;
+}
+
+.authentication-notice {
+    margin-top: 25px;
+}
+
+.authentication-notice p + p {
+    margin-top: 12px;
+}
+
+
+/*==============================================================================
     RESPONSIVE
 ==============================================================================*/
 
@@ -487,5 +546,377 @@ button:disabled {
 
     .form-group input {
         max-width: 100%;
+    }
+}
+
+
+/*==============================================================================
+    USER ACTIONS
+==============================================================================*/
+
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.twitch-display-name {
+    color: var(--accent-color, #00ff78);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+
+/*==============================================================================
+    OVERLAY LINK
+==============================================================================*/
+
+.overlay-link-card {
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid rgba(0, 255, 120, 0.25);
+    border-radius: 0.75rem;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.overlay-link-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.overlay-link-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.overlay-link-input {
+    width: min(100%, 32rem);
+    padding: 0.75rem 1rem;
+    color: #ffffff;
+    border: 1px solid rgba(0, 255, 120, 0.35);
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.45);
+    font-family: monospace;
+}
+
+
+/*==============================================================================
+    DYNAMIC SETTINGS
+==============================================================================*/
+
+.dynamic-settings-layout {
+    display: grid;
+    grid-template-columns: repeat( auto-fit, minmax(20rem, 1fr));
+    gap: 1.5rem;
+}
+
+.setting-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.setting-label {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.setting-description {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+
+/*==============================================================================
+    SETTINGS INPUTS
+==============================================================================*/
+
+.settings-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    color: #ffffff;
+    border: 1px solid rgba(0, 255, 120, 0.35);
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.55);
+    outline: none;
+}
+
+.settings-input:focus {
+    border-color: #00ff78;
+    box-shadow: 0 0 0.75rem rgba(0, 255, 120, 0.25);
+}
+
+
+/*==============================================================================
+    CUSTOM SELECTOR
+==============================================================================*/
+
+.custom-selector {
+    position: relative;
+    width: 100%;
+}
+
+.custom-selector-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    color: #ffffff;
+    border: 1px solid rgba(0, 255, 120, 0.35);
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.55);
+    cursor: pointer;
+    text-align: left;
+}
+
+.custom-selector-button:hover {
+    border-color: #00ff78;
+}
+
+.custom-selector.open
+.custom-selector-button {
+    border-color: #00ff78;
+    box-shadow: 0 0 0.75rem rgba(0, 255, 120, 0.25);
+}
+
+.custom-selector-arrow {
+    flex-shrink: 0;
+    color: #00ff78;
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+}
+
+.custom-selector.open
+.custom-selector-arrow {
+    transform: rotate(180deg);
+}
+
+.custom-selector-menu {
+    position: absolute;
+    z-index: 100;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    width: 100%;
+    max-height: 18rem;
+    display: none;
+    overflow-y: auto;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    border: 1px solid rgba(0, 255, 120, 0.4);
+    border-radius: 0.5rem;
+    background: #0a0a0a;
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.5);
+}
+
+.custom-selector.open
+.custom-selector-menu {
+    display: block;
+}
+
+.custom-selector-option {
+    width: 100%;
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #ffffff;
+    border: none;
+    border-radius: 0.35rem;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+}
+
+.custom-selector-option:hover {
+    color: #00ff78;
+    background: rgba(0, 255, 120, 0.1);
+}
+
+.custom-selector-option.selected {
+    color: #00ff78;
+    background: rgba(0, 255, 120, 0.14);
+
+}
+
+
+/*==============================================================================
+    FONT SELECTOR
+==============================================================================*/
+
+.font-selector-group {
+    display: grid;
+    grid-template-columns:
+        minmax(9rem, 0.8fr)
+        minmax(12rem, 1.2fr);
+    gap: 0.75rem;
+}
+
+
+/*==============================================================================
+    COLOR CONTROL
+==============================================================================*/
+
+.color-control {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.color-control
+input[type="color"] {
+    width: 3.25rem;
+    height: 2.75rem;
+    padding: 0.25rem;
+    border: 1px solid rgba(0, 255, 120, 0.35);
+    border-radius: 0.5rem;
+    background: rgba(0, 0, 0, 0.55);
+    cursor: pointer;
+}
+
+
+/*==============================================================================
+    CUSTOM CHECKBOX
+==============================================================================*/
+
+.custom-checkbox {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    cursor: pointer;
+}
+
+.custom-checkbox
+input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.checkbox-visual {
+    position: relative;
+    width: 2.75rem;
+    height: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.6);
+    transition:0.2s ease;
+}
+
+.checkbox-visual::after {
+    content: "";
+    position: absolute;
+    top: 0.2rem;
+    left: 0.2rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+    transition: 0.2s ease;
+}
+
+.custom-checkbox
+input:checked
++
+.checkbox-visual {
+    border-color: #00ff78;
+    background: rgba(0, 255, 120, 0.18);
+}
+
+.custom-checkbox
+input:checked
++
+.checkbox-visual::after {
+
+    transform: translateX(1.25rem);
+    background: #00ff78;
+}
+
+/*==============================================================================
+    SETTINGS EDITOR
+==============================================================================*/
+
+.dynamic-settings-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+
+.settings-column {
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+}
+
+
+.settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+
+.setting-field {
+    width: 100%;
+    min-width: 0;
+}
+
+
+.font-selector-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    min-width: 0;
+}
+
+
+.font-selector-group .custom-selector {
+    width: 100%;
+    min-width: 0;
+}
+
+
+/*==============================================================================
+    RESPONSIVE
+==============================================================================*/
+
+@media (
+    max-width: 768px
+) {
+
+    .page-header-content,
+    .overlay-link-content,
+    .overlay-link-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .user-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .overlay-link-input {
+        width: 100%;
+    }
+
+    .font-selector-group {
+        grid-template-columns: 1fr;
+    }
+
+    .color-control {
+        align-items: stretch;
+        flex-direction: column;
     }
 }

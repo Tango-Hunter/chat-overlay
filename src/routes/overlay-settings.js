@@ -1,13 +1,17 @@
-/**
+/*
+ * ============================================================================
  * Name: overlay-settings.js
  * Author: Tango Hunter
  * Date Created: 8/26/26
- * Description: Express routes for the Digital Terminal Chat Overlay settings manager.
+ * Description: Express routes for the Chat Overlay settings editor.
+ * ============================================================================
  */
-
 
 import express from "express";
 
+import {
+    getUserByTwitchId
+} from "../database/registered-users-repository.js";
 
 import {
     getSettings,
@@ -16,40 +20,17 @@ import {
 } from "../database/settings-repository.js";
 
 
-const router = express.Router();
+/*==============================================================================
+    ROUTER
+==============================================================================*/
+
+const router =
+    express.Router();
 
 
-/*
-==============================================================================
-    GET OVERLAY SETTINGS
-==============================================================================
-
-    Endpoint:
-
-        GET /api/overlay-settings
-
-    Purpose:
-
-        Retrieves all overlay settings required by the
-        settings management webpage.
-
-    Response:
-
-        {
-            settings: [
-                {
-                    setting_name,
-                    setting_value,
-                    setting_default,
-                    form_type,
-                    css_class,
-                    updated_at
-                }
-            ]
-        }
-
-==============================================================================
-*/
+/*==============================================================================
+    GET SETTINGS
+==============================================================================*/
 
 router.get(
     "/",
@@ -58,75 +39,87 @@ router.get(
         res
     ) => {
 
-        try {
+        const twitchUserId =
+            req.session.twitchUserId;
 
-            console.log("[Overlay Settings] GET request received.");
+        if (
+            !twitchUserId
+        ) {
 
-            const settings = await getSettings();
-
-            console.log(`[Overlay Settings] Loaded ${settings.length} settings.`);
-
-            return res.status(200).json({
-                settings
+            return res.status(
+                400
+            ).json({
+                error:
+                    "A Twitch user ID is required."
             });
         }
 
-        catch (error) {
+        try {
+
+            const [
+                settings,
+                user
+            ] =
+                await Promise.all([
+                    getSettings(
+                        twitchUserId
+                    ),
+
+                    getUserByTwitchId(
+                        twitchUserId
+                    )
+                ]);
+
+            if (
+                !user
+            ) {
+
+                return res.status(
+                    404
+                ).json({
+                    error:
+                        "Registered user not found."
+                });
+            }
+
+            return res.status(
+                200
+            ).json({
+                settings,
+
+                user: {
+                    twitchUserId:
+                        user.twitch_user_id,
+
+                    twitchDisplayName:
+                        user.twitch_display_name,
+
+                    twitchScopes:
+                        user.twitch_scopes || []
+                }
+            });
+
+        } catch (error) {
+
             console.error(
-                "[Overlay Settings] Failed to load settings:",
+                "[Overlay Settings] Failed to load settings.",
                 error
             );
 
-            return res.status(500).json({
-                error: "Unable to load overlay settings."
+            return res.status(
+                500
+            ).json({
+                error:
+                    "Unable to load overlay settings."
             });
         }
     }
 );
 
 
-/*
-==============================================================================
-    UPDATE OVERLAY SETTINGS
-==============================================================================
-
-    Endpoint:
-
-        PUT /api/overlay-settings
-
-    Expected body:
-
-        {
-            settings: [
-                {
-                    setting_name: "font_size",
-                    setting_value: "18px"
-                },
-                {
-                    setting_name: "typing_speed",
-                    setting_value: "35"
-                }
-            ]
-        }
-
-    Important:
-
-        The client is only permitted to submit:
-
-            setting_name
-            setting_value
-
-        Metadata such as:
-
-            setting_default
-            form_type
-            css_class
-            updated_at
-
-        remains server/database controlled.
-
-==============================================================================
-*/
+/*==============================================================================
+    UPDATE SETTINGS
+==============================================================================*/
 
 router.put(
     "/",
@@ -135,38 +128,57 @@ router.put(
         res
     ) => {
 
+        const twitchUserId =
+            req.session.twitchUserId;
+
+        if (
+            !twitchUserId
+        ) {
+
+            return res.status(
+                400
+            ).json({
+                error:
+                    "A Twitch user ID is required."
+            });
+        }
+
+        const {
+            settings
+        } =
+            req.body || {};
+
+        if (
+            !Array.isArray(
+                settings
+            )
+        ) {
+
+            return res.status(
+                400
+            ).json({
+                error:
+                    "Request body must contain a settings array."
+            });
+        }
+
+        if (
+            settings.length ===
+            0
+        ) {
+
+            return res.status(
+                400
+            ).json({
+                error:
+                    "Settings array cannot be empty."
+            });
+        }
+
         try {
 
-            console.log("[Overlay Settings] PUT request received.");
-
-            const { settings } = req.body;
-
-            /*
-            ----------------------------------------------------------
-            VALIDATE REQUEST BODY
-            ----------------------------------------------------------
-            */
-            if (
-                !settings ||
-                !Array.isArray(settings)
-            ) {
-                return res.status(400).json({
-                    error: "Request body must contain a settings array."
-                });
-            }
-
-            /*
-            ----------------------------------------------------------
-            VALIDATE SETTINGS
-            ----------------------------------------------------------
-            */
-            if (
-                settings.length === 0
-            ) {
-                return res.status(400).json({
-                    error: "Settings array cannot be empty."
-                });
-            }
+            const uniqueSettings =
+                new Map();
 
             for (
                 const setting of settings
@@ -177,19 +189,30 @@ router.put(
                     typeof setting !==
                         "object"
                 ) {
-                    return res.status(400).json({
-                        error: "Each setting must be an object."
+
+                    return res.status(
+                        400
+                    ).json({
+                        error:
+                            "Each setting must be an object."
                     });
                 }
 
+                const settingName =
+                    setting.setting_name;
+
                 if (
-                    typeof setting.setting_name !==
+                    typeof settingName !==
                         "string" ||
-                    setting.setting_name.trim() ===
-                        ""
+
+                    !settingName.trim()
                 ) {
-                    return res.status(400).json({
-                        error: "Each setting must contain a valid setting_name."
+
+                    return res.status(
+                        400
+                    ).json({
+                        error:
+                            "Each setting must contain a valid setting_name."
                     });
                 }
 
@@ -199,35 +222,27 @@ router.put(
                         "setting_value"
                     )
                 ) {
-                    return res.status(400).json({
-                        error: `Setting "${setting.setting_name}" is missing setting_value.`
+
+                    return res.status(
+                        400
+                    ).json({
+                        error:
+                            `Setting "${settingName}" is missing setting_value.`
                     });
                 }
-            }
 
-            /*
-            ----------------------------------------------------------
-            REMOVE DUPLICATE SETTING NAMES
-            ----------------------------------------------------------
-
-            The webpage should never send duplicates, but we
-            normalize the request here so a malformed request
-            cannot cause ambiguous updates.
-            */
-            const uniqueSettings = new Map();
-
-            for (
-                const setting of settings
-            ) {
                 uniqueSettings.set(
-                    setting.setting_name.trim(),
-                    setting.setting_value
+                    settingName.trim(),
+                    String(
+                        setting.setting_value
+                    )
                 );
             }
 
             const normalizedSettings =
-                Array.from(uniqueSettings.entries())
-                .map(
+                Array.from(
+                    uniqueSettings.entries()
+                ).map(
                     (
                         [
                             setting_name,
@@ -239,57 +254,41 @@ router.put(
                     })
                 );
 
-            console.log(`[Overlay Settings] Updating ${normalizedSettings.length} settings.`);
+            const updatedSettings =
+                await updateSettings(
+                    twitchUserId,
+                    normalizedSettings
+                );
 
-            /*
-            ----------------------------------------------------------
-            UPDATE DATABASE
-            ----------------------------------------------------------
-            */
-            await updateSettings(normalizedSettings);
-
-            console.log("[Overlay Settings] Settings updated successfully.");
-
-            return res.status(200).json({
+            return res.status(
+                200
+            ).json({
                 success: true,
-                message: "Overlay settings updated successfully."
+                settings:
+                    updatedSettings
             });
-        }
 
-        catch (error) {
+        } catch (error) {
 
             console.error(
-                "[Overlay Settings] Failed to update settings:",
+                "[Overlay Settings] Failed to update settings.",
                 error
             );
 
-            return res.status(500).json({
-                error: "Unable to update overlay settings."
+            return res.status(
+                500
+            ).json({
+                error:
+                    "Unable to update overlay settings."
             });
         }
     }
 );
 
 
-/*
-==============================================================================
-    RESET OVERLAY SETTINGS
-==============================================================================
-
-    Endpoint:
-
-        POST /api/overlay-settings/reset
-
-    Purpose:
-
-        Restores every overlay setting to its database-defined
-        default value.
-
-    The repository is responsible for determining the default
-    values and updating the database.
-
-==============================================================================
-*/
+/*==============================================================================
+    RESET SETTINGS
+==============================================================================*/
 
 router.post(
     "/reset",
@@ -298,39 +297,51 @@ router.post(
         res
     ) => {
 
-        try {
+        const twitchUserId =
+            req.session.twitchUserId;
 
-            console.log("[Overlay Settings] RESET request received.");
+        if (
+            !twitchUserId
+        ) {
 
-            await resetSettings();
-
-            console.log("[Overlay Settings] Settings reset to defaults successfully.");
-
-            return res.status(200).json({
-                success: true,
-                message: "Overlay settings reset to their default values."
+            return res.status(
+                400
+            ).json({
+                error:
+                    "A Twitch user ID is required."
             });
         }
 
-        catch (error) {
+        try {
+
+            const settings =
+                await resetSettings(
+                    twitchUserId
+                );
+
+            return res.status(
+                200
+            ).json({
+                success: true,
+                settings
+            });
+
+        } catch (error) {
 
             console.error(
-                "[Overlay Settings] Failed to reset settings:",
+                "[Overlay Settings] Failed to reset settings.",
                 error
             );
 
-            return res.status(500).json({
-                error: "Unable to reset overlay settings."
+            return res.status(
+                500
+            ).json({
+                error:
+                    "Unable to reset overlay settings."
             });
         }
     }
 );
 
-
-/*
-==============================================================================
-    EXPORT ROUTER
-==============================================================================
-*/
 
 export default router;

@@ -14,7 +14,8 @@ import { promisify } from "node:util";
 import config from "../configs/config.js";
 
 import {
-    isSessionAuthenticated
+    isSessionAuthenticated,
+    isAdministrator
 } from "../auth/require-authentication.js";
 
 import {
@@ -27,6 +28,10 @@ import {
 import {
     createDefaultSettings
 } from "../database/settings-repository.js";
+
+import {
+    createSubscription
+} from "../database/twitch-eventsub-repository.js";
 
 import {
     getPendingTwitchAuthorization,
@@ -173,41 +178,6 @@ async function hashPassword(
         )
     ].join(
         "$"
-    );
-}
-
-
-/*==============================================================================
-    ADMINISTRATOR CHECK
-==============================================================================*/
-
-function isAdministrator(
-    req
-) {
-
-    if (
-        !isSessionAuthenticated(
-            req.session
-        )
-    ) {
-
-        return false;
-    }
-
-    /*
-     * TEMPORARY BOOTSTRAP OVERRIDE.
-     *
-     * Restore the administrator Twitch ID check after the first
-     * successful registered account has been created.
-     */
-
-    const twitchUserId =
-        req.session.twitchUserId;
-
-    return (
-        //twitchUserId ===
-        //config.auth.administrator
-        true
     );
 }
 
@@ -781,18 +751,43 @@ router.post(
                     pendingAuthorization.scopes
                 );
 
-            } catch (settingsError) {
+                await createSubscription({
+                    twitchUserId:
+                        pendingAuthorization.twitchUserId,
+
+                    subscriptionId:
+                        null,
+
+                    subscriptionType:
+                        "channel.chat.message",
+
+                    subscriptionVersion:
+                        "1",
+
+                    condition: {
+                        broadcaster_user_id:
+                            pendingAuthorization.twitchUserId,
+
+                        user_id:
+                            pendingAuthorization.twitchUserId
+                    },
+
+                    status:
+                        "pending"
+                });
+
+            } catch (registrationSetupError) {
 
                 console.error(
-                    "Failed to create default user settings.",
-                    settingsError
+                    "Failed to initialize registered user resources.",
+                    registrationSetupError
                 );
 
                 await deleteUser(
                     user.id
                 );
 
-                throw settingsError;
+                throw registrationSetupError;
             }
 
             /*

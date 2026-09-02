@@ -6,13 +6,14 @@
  */
 /**
  * To open the Settings Editor Locally after `npm start`:
- * http://localhost:3000/overlay-settings.html
+ * http://localhost:3000/overlay-settings
  */
 
 
 import express from "express";
 import session from "express-session";
 import pgSession from "connect-pg-simple";
+
 import config from "./configs/config.js";
 import { initializeDatabase } from "./database/init-database.js";
 import overlaySettingsRoutes from "./routes/overlay-settings.js";
@@ -20,9 +21,13 @@ import authenticationRoutes from "./routes/authentication.js";
 import registrationRoutes from "./routes/registration.js";
 import twitchRoutes from "./routes/twitch.js";
 import {
+    validateEnabledTwitchTokens
+} from "./twitch/twitch-auth.js";
+import {
     requireAuthentication,
     requirePageAuthentication
 } from "./auth/require-authentication.js";
+
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -282,6 +287,26 @@ async function startServer() {
          * Initialize tables in the database.
          */
         await initializeDatabase();
+
+        /*
+         * Validate enabled Twitch authorizations during startup
+         * when explicitly enabled in configuration.
+         *
+         * getValidAccessToken() only refreshes a token when Twitch
+         * rejects the existing access token.
+         */
+
+        if (
+            config.app.refreshOnStartup
+        ) {
+            console.log(
+                "Validating enabled Twitch authorizations..."
+            );
+            await validateEnabledTwitchTokens();
+            console.log(
+                "Twitch authorization validation complete."
+            );
+        }
 
         /*
          * Start the Express server after the database

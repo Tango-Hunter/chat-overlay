@@ -485,3 +485,74 @@ export async function getTwitchScopes(
         []
     );
 }
+
+
+/*==============================================================================
+    VALIDATE ENABLED USER TOKENS
+==============================================================================*/
+
+export async function validateEnabledTwitchTokens() {
+
+    const result =
+        await database.query(
+            `
+                SELECT
+                    twitch_user_id
+                FROM
+                    chat_overlay_registered_users
+                WHERE
+                    enabled = TRUE
+                ORDER BY
+                    id
+            `
+        );
+
+    const users =
+        result.rows;
+
+    console.log(
+        `[Twitch Auth] Validating ${users.length} enabled Twitch authorization(s).`
+    );
+
+    const results = [];
+
+    for (
+        const user of users
+    ) {
+
+        const twitchUserId =
+            user.twitch_user_id;
+
+        try {
+
+            await getValidAccessToken(
+                twitchUserId
+            );
+
+            console.log(
+                `[Twitch Auth] Token valid for ${twitchUserId}.`
+            );
+
+            results.push({
+                twitchUserId,
+                valid: true
+            });
+
+        } catch (error) {
+
+            console.error(
+                `[Twitch Auth] Token validation failed for ${twitchUserId}.`,
+                error
+            );
+
+            results.push({
+                twitchUserId,
+                valid: false,
+                error:
+                    error.message
+            });
+        }
+    }
+
+    return results;
+}

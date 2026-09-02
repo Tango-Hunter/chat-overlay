@@ -2,8 +2,8 @@
  * ============================================================================
  * Name: authentication.js
  * Author: Tango Hunter
- * Date: 8/30/26
- * Description: Express routes for operator authentication and session management.
+ * Date Created: 8/30/26
+ * Description: Express routes for user authentication and session management.
  * ============================================================================
  */
 
@@ -20,6 +20,10 @@ import {
 import {
     getUserByUsername
 } from "../database/registered-users-repository.js";
+
+import {
+    getValidAccessToken
+} from "../twitch/twitch-auth.js";
 
 
 /*==============================================================================
@@ -41,40 +45,6 @@ const scryptAsync =
 
 
 /*==============================================================================
-    HELPERS
-==============================================================================*/
-
-function safeCompare(
-    value,
-    expected
-) {
-
-    const valueBuffer =
-        Buffer.from(
-            value
-        );
-
-    const expectedBuffer =
-        Buffer.from(
-            expected
-        );
-
-    if (
-        valueBuffer.length !==
-        expectedBuffer.length
-    ) {
-
-        return false;
-    }
-
-    return crypto.timingSafeEqual(
-        valueBuffer,
-        expectedBuffer
-    );
-}
-
-
-/*==============================================================================
     PASSWORD VERIFICATION
 ==============================================================================*/
 
@@ -87,7 +57,6 @@ async function verifyPassword(
         !password ||
         !storedHash
     ) {
-
         return false;
     }
 
@@ -97,10 +66,8 @@ async function verifyPassword(
         );
 
     if (
-        parts.length !==
-            6 ||
-        parts[0] !==
-            "scrypt"
+        parts.length !== 6 ||
+        parts[0] !== "scrypt"
     ) {
 
         console.error(
@@ -138,7 +105,6 @@ async function verifyPassword(
         !salt ||
         !expectedHash
     ) {
-
         return false;
     }
 
@@ -166,7 +132,6 @@ async function verifyPassword(
             derivedKey.length !==
             expectedBuffer.length
         ) {
-
             return false;
         }
 
@@ -201,6 +166,55 @@ function updateSessionActivity(
 
 
 /*==============================================================================
+    VALIDATE TWITCH AUTHORIZATION
+==============================================================================*/
+
+async function validateTwitchAuthorization(
+    twitchUserId
+) {
+
+    /*
+     * Legacy users may not have a Twitch user ID yet.
+     *
+     * Authentication is still allowed for these accounts.
+     */
+
+    if (
+        !twitchUserId
+    ) {
+        return {
+            checked: false,
+            valid: false
+        };
+    }
+
+    try {
+
+        await getValidAccessToken(
+            twitchUserId
+        );
+
+        return {
+            checked: true,
+            valid: true
+        };
+
+    } catch (error) {
+
+        console.error(
+            `Failed to validate Twitch authorization for user ${twitchUserId}.`,
+            error
+        );
+
+        return {
+            checked: true,
+            valid: false
+        };
+    }
+}
+
+
+/*==============================================================================
     LOGIN
 ==============================================================================*/
 
@@ -214,10 +228,8 @@ router.post(
         } = req.body;
 
         if (
-            typeof username !==
-                "string" ||
-            typeof password !==
-                "string"
+            typeof username !== "string" ||
+            typeof password !== "string"
         ) {
 
             return res.status(
@@ -229,165 +241,219 @@ router.post(
             });
         }
 
-        let authenticated =
-            false;
-
-        let sessionOperator =
-            username;
-
-        let twitchUserId =
-            null;
-
-        /*
-         * Check registered database users first.
-         */
-
-        const registeredUser =
-            await getUserByUsername(
-                username
-            );
+        const normalizedUsername =
+            username.trim();
 
         if (
-            registeredUser &&
-            registeredUser.enabled
+            !normalizedUsername ||
+            !password
         ) {
 
-            authenticated =
+            return res.status(
+                400
+            ).json({
+                authenticated: false,
+                message:
+                    "Invalid credentials."
+            });
+        }
+
+        try {
+
+            /*
+             * Database authentication only.
+             */
+
+            const registeredUser =
+                await getUserByUsername(
+                    normalizedUsername
+                );
+
+            if (
+                !registeredUser ||
+                !registeredUser.enabled
+            ) {
+
+                return res.status(
+                    401
+                ).json({
+                    authenticated: false,
+                    message:
+                        "Authentication failed."
+                });
+            }
+
+            const passwordValid =
                 await verifyPassword(
                     password,
                     registeredUser.password_hash
                 );
 
             if (
-                authenticated
+                !passwordValid
             ) {
 
-                sessionOperator =
-                    registeredUser.username;
-
-                twitchUserId =
-                    registeredUser.twitch_user_id;
+                return res.status(
+                    401
+                ).json({
+                    authenticated: false,
+                    message:
+                        "Authentication failed."
+                });
             }
-        }
 
-        /*
-         * Preserve the existing .env operator credentials.
-         */
+            /*
+             * Check the Twitch token before creating
+             * the authenticated session.
+             *
+             * A failed Twitch validation does not prevent
+             * the user from logging into the application.
+             */
 
-        if (
-            !authenticated
-        ) {
-
-            const usernameMatches =
-                safeCompare(
-                    username,
-                    config.auth.username
+            const twitchAuthorization =
+                await validateTwitchAuthorization(
+                    registeredUser.twitch_user_id
                 );
 
-            if (
-                usernameMatches
-            ) {
+            /*
+             * Regenerate the session after successful
+             * authentication to prevent session fixation.
+             */
 
-                authenticated =
-                    await verifyPassword(
-                        password,
-                        config.auth.passwordHash
+            req.session.regenerate(
+                error => {
+
+                    if (
+                        error
+                    ) {
+
+                        console.error(
+                            "Failed to regenerate authentication session.",
+                            error
+                        );
+
+                        return res.status(
+                            500
+                        ).json({
+                            authenticated: false,
+                            message:
+                                "Authentication system failure."
+                        });
+                    }
+
+                    const twitchUserId =
+                        registeredUser.twitch_user_id ||
+                        null;
+
+                    const isAdministrator =
+                        twitchUserId !== null &&
+                        twitchUserId ===
+                        config.auth.administrator;
+
+                    req.session.authenticated =
+                        true;
+
+                    req.session.userId =
+                        registeredUser.id;
+
+                    req.session.username =
+                        registeredUser.username;
+
+                    /*
+                     * Retained for compatibility with
+                     * existing application code.
+                     */
+
+                    req.session.operator =
+                        registeredUser.username;
+
+                    req.session.twitchUserId =
+                        twitchUserId;
+
+                    req.session.twitchUsername =
+                        registeredUser.twitch_username ||
+                        null;
+
+                    req.session.twitchDisplayName =
+                        registeredUser.twitch_display_name ||
+                        null;
+
+                    /*
+                     * This is convenient session information.
+                     *
+                     * Sensitive route authorization should
+                     * still verify twitchUserId against
+                     * config.auth.administrator.
+                     */
+
+                    req.session.isAdministrator =
+                        isAdministrator;
+
+                    req.session.twitchAuthorizationChecked =
+                        twitchAuthorization.checked;
+
+                    req.session.twitchAuthorizationValid =
+                        twitchAuthorization.valid;
+
+                    req.session.createdAt =
+                        Date.now();
+
+                    req.session.lastActivity =
+                        Date.now();
+
+                    req.session.save(
+                        saveError => {
+
+                            if (
+                                saveError
+                            ) {
+
+                                console.error(
+                                    "Failed to save authentication session.",
+                                    saveError
+                                );
+
+                                return res.status(
+                                    500
+                                ).json({
+                                    authenticated: false,
+                                    message:
+                                        "Authentication system failure."
+                                });
+                            }
+
+                            return res.status(
+                                200
+                            ).json({
+                                authenticated: true,
+
+                                twitchUserId,
+
+                                isAdministrator,
+
+                                twitchAuthorization:
+                                    twitchAuthorization.valid
+                            });
+                        }
                     );
-
-                if (
-                    authenticated
-                ) {
-
-                    sessionOperator =
-                        config.auth.username;
                 }
-            }
-        }
+            );
 
-        if (
-            !authenticated
-        ) {
+        } catch (error) {
+
+            console.error(
+                "Authentication failed.",
+                error
+            );
 
             return res.status(
-                401
+                500
             ).json({
                 authenticated: false,
                 message:
-                    "Authentication failed."
+                    "Authentication system failure."
             });
         }
-
-        /*
-         * Regenerate the session after successful
-         * authentication to prevent session fixation.
-         */
-
-        req.session.regenerate(
-            error => {
-
-                if (
-                    error
-                ) {
-
-                    console.error(
-                        "Failed to regenerate authentication session.",
-                        error
-                    );
-
-                    return res.status(
-                        500
-                    ).json({
-                        authenticated: false,
-                        message:
-                            "Authentication system failure."
-                    });
-                }
-
-                req.session.authenticated =
-                    true;
-
-                req.session.operator =
-                    sessionOperator;
-
-                req.session.twitchUserId =
-                    twitchUserId;
-
-                req.session.createdAt =
-                    Date.now();
-
-                req.session.lastActivity =
-                    Date.now();
-
-                req.session.save(
-                    saveError => {
-
-                        if (
-                            saveError
-                        ) {
-
-                            console.error(
-                                "Failed to save authentication session.",
-                                saveError
-                            );
-
-                            return res.status(
-                                500
-                            ).json({
-                                authenticated: false,
-                                message:
-                                    "Authentication system failure."
-                            });
-                        }
-
-                        return res.status(
-                            200
-                        ).json({
-                            authenticated: true
-                        });
-                    }
-                );
-            }
-        );
     }
 );
 
@@ -447,13 +513,44 @@ router.get(
                     });
                 }
 
+                const twitchUserId =
+                    req.session.twitchUserId ||
+                    null;
+
+                const isAdministrator =
+                    twitchUserId !== null &&
+                    twitchUserId ===
+                    config.auth.administrator;
+
                 return res.status(
                     200
                 ).json({
                     authenticated: true,
-                    twitchUserId:
-                        req.session.twitchUserId ||
-                        null
+
+                    userId:
+                        req.session.userId ||
+                        null,
+
+                    username:
+                        req.session.username ||
+                        req.session.operator ||
+                        null,
+
+                    twitchUserId,
+
+                    twitchUsername:
+                        req.session.twitchUsername ||
+                        null,
+
+                    twitchDisplayName:
+                        req.session.twitchDisplayName ||
+                        null,
+
+                    isAdministrator,
+
+                    twitchAuthorization:
+                        req.session.twitchAuthorizationValid ===
+                        true
                 });
             }
         );
@@ -494,11 +591,14 @@ router.post(
                     config.auth.sessionCookieName,
                     {
                         httpOnly: true,
+
                         secure:
                             config.server.environment ===
                             "production",
+
                         sameSite:
-                            "strict",
+                            "lax",
+
                         path: "/"
                     }
                 );
