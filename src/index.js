@@ -20,9 +20,8 @@ import overlaySettingsRoutes from "./routes/overlay-settings.js";
 import authenticationRoutes from "./routes/authentication.js";
 import registrationRoutes from "./routes/registration.js";
 import twitchRoutes from "./routes/twitch.js";
-import {
-    validateEnabledTwitchTokens
-} from "./twitch/twitch-auth.js";
+import { validateEnabledTwitchTokens } from "./twitch/twitch-auth.js";
+import { connectEventSubWebSocket } from "./twitch/eventsub-websocket-manager.js";
 import {
     requireAuthentication,
     requirePageAuthentication
@@ -322,6 +321,23 @@ async function startServer() {
             console.log(` Health      : http://${host}:${port}/health`);
             console.log("========================================");
             console.log("");
+
+            connectEventSubWebSocket()
+                .then(
+                    () => {
+                        console.log(
+                            "[EventSub WebSocket] Startup connection successful."
+                        );
+                    }
+                )
+                .catch(
+                    error => {
+                        console.error(
+                            "[EventSub WebSocket] Initial startup connection failed.",
+                            error
+                        );
+                    }
+                );
         });
     } catch (error) {
         /*
