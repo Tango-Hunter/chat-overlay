@@ -184,6 +184,35 @@ export async function getUsers() {
 
 
 /*==============================================================================
+    GET ENABLED TWITCH USERS
+==============================================================================*/
+
+export async function getEnabledTwitchUsers() {
+
+    const result =
+        await database.query(
+            `
+                SELECT
+                    id,
+                    twitch_user_id,
+                    twitch_username,
+                    twitch_display_name,
+                    twitch_scopes
+                FROM
+                    chat_overlay_registered_users
+                WHERE
+                    enabled = TRUE
+                    AND twitch_user_id IS NOT NULL
+                ORDER BY
+                    id
+            `
+        );
+
+    return result.rows;
+}
+
+
+/*==============================================================================
     UPDATE USER
 ==============================================================================*/
 

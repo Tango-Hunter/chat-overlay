@@ -12,6 +12,10 @@ import {
 } from "./eventsub-handler.js";
 
 import {
+    synchronizeEventSubSubscriptions
+} from "./eventsub-synchronizer.js";
+
+import {
     updateSubscriptionStatus
 } from "../database/twitch-eventsub-repository.js";
 
@@ -57,6 +61,7 @@ export async function connectEventSubWebSocket() {
         connection.socket.readyState ===
         WebSocket.OPEN
     ) {
+
         return connection;
     }
 
@@ -64,7 +69,11 @@ export async function connectEventSubWebSocket() {
         false;
 
     await openConnection(
-        EVENTSUB_URL
+        EVENTSUB_URL,
+        {
+            isSessionMigration:
+                false
+        }
     );
 
     return connection;
@@ -76,7 +85,11 @@ export async function connectEventSubWebSocket() {
 ==============================================================================*/
 
 async function openConnection(
-    url
+    url,
+    {
+        isSessionMigration =
+            false
+    } = {}
 ) {
 
     const socket =
@@ -119,7 +132,10 @@ async function openConnection(
 
                         await handleMessage(
                             socket,
-                            message
+                            message,
+                            {
+                                isSessionMigration
+                            }
                         );
 
                         if (
@@ -203,7 +219,11 @@ async function openConnection(
 
 async function handleMessage(
     socket,
-    message
+    message,
+    {
+        isSessionMigration =
+            false
+    } = {}
 ) {
 
     const type =
@@ -216,7 +236,10 @@ async function handleMessage(
 
             await handleWelcome(
                 socket,
-                message
+                message,
+                {
+                    isSessionMigration
+                }
             );
 
             break;
@@ -267,7 +290,11 @@ async function handleMessage(
 
 async function handleWelcome(
     socket,
-    message
+    message,
+    {
+        isSessionMigration =
+            false
+    } = {}
 ) {
 
     const session =
@@ -308,6 +335,31 @@ async function handleWelcome(
         `[EventSub WebSocket] Session established: ${connection.sessionId}`
     );
 
+    /*
+     * Twitch session migrations preserve the existing EventSub
+     * subscriptions. Do not create replacement subscriptions during
+     * a Twitch-requested session migration.
+     */
+
+    if (
+        !isSessionMigration
+    ) {
+
+        console.log(
+            "[EventSub WebSocket] Synchronizing EventSub subscriptions."
+        );
+
+        await synchronizeEventSubSubscriptions(
+            connection.sessionId
+        );
+
+    } else {
+
+        console.log(
+            "[EventSub WebSocket] Session migration complete. Existing subscriptions retained."
+        );
+    }
+
     if (
         previousSocket &&
         previousSocket !== socket &&
@@ -347,6 +399,7 @@ function startKeepaliveMonitor() {
     if (
         !connection.keepaliveTimeout
     ) {
+
         return;
     }
 
@@ -364,6 +417,7 @@ function startKeepaliveMonitor() {
                 if (
                     !connection.lastMessageAt
                 ) {
+
                     return;
                 }
 
@@ -375,6 +429,7 @@ function startKeepaliveMonitor() {
                     elapsed <=
                     timeout
                 ) {
+
                     return;
                 }
 
@@ -447,6 +502,7 @@ async function handleReconnect(
     if (
         connection.reconnecting
     ) {
+
         return;
     }
 
@@ -460,7 +516,11 @@ async function handleReconnect(
     try {
 
         await openConnection(
-            reconnectUrl
+            reconnectUrl,
+            {
+                isSessionMigration:
+                    true
+            }
         );
 
     } catch (error) {
@@ -567,12 +627,14 @@ function handleSocketClose(
     if (
         connection.intentionallyDisconnected
     ) {
+
         return;
     }
 
     if (
         connection.reconnecting
     ) {
+
         return;
     }
 
@@ -590,6 +652,7 @@ function scheduleReconnect() {
         connection.intentionallyDisconnected ||
         connection.reconnectTimer
     ) {
+
         return;
     }
 
